@@ -1,0 +1,78 @@
+1. How can you pass a prompt or error message 
+to a function as an argument?
+    
+ There are 2 ways to pass it. By passing the return 
+ error or return the number.
+
+2. How do you pass a string to a function? 
+Will the strings need to be changed here? 
+What care do you need to take for these arguments, then?
+    
+ We could use parameters in our functions instead of passing it.
+ No, the strings will not need to be changed because the user 
+ descides how to write them.
+
+3. How do you pass a list of values to a function? 
+(Warning! There could be two [related] answers!) 
+Will the elements need to be changed here? 
+What care do you need to take for these arguments, then?
+    
+ You could use a list by arrays or vectors. 
+ I used vectors to make a list of the nummbers. 
+ The elements can't be changed and they protected 
+ call by refrence. 
+
+4. What other arguments does each function take? 
+Are they changed? What special care should you take with them?
+    
+ Arguments can be passed by const by refrence to ensure 
+ they are not altered. Some of my arguments used are char, 
+ double, long, vectors, and int. 
+
+5.What value is returned by your functions? 
+What type is it and what does it represent?
+
+ My return values are the variables that reads the 
+ user response and returns them. Most of it are long, char, 
+ and double return values followed by varaibles.
+
+6.What care does a caller of your functions have to 
+take with this return value? 
+(Can they immediately assume it is a valid entry?)
+    
+ If the user enter an inncorrect number or character, 
+ the function will repeats itself untill the user enters
+ it correctly. Once it passes to another statement 
+ then they will know if it's valid.
+
+7.How does the compiler distinguish which of your 
+functions is being used for a particular call? 
+(They ALLhave the same name, after all...)
+    
+ The compiler descides on the parameters used to
+ make our functions. For exmaple, in a driver test, we can 
+ write the specefic needs for a function to work 
+ which the compiler will find in the .cpp file.
+
+8.How do you protect your library from being circularly included?
+    
+ When we use #ifndef and #define followed by #endif at the end
+ of a libary. So, the compiler will know what to do with the libary
+ by including the 3 lines of code.
+
+9. What changes are needed in your main application 
+(the test application here) to get it to work with the library?
+What about the compiling process?
+    
+ We would have to include the libary that we created in order for
+ the program to work. When we compile the program it should all do it
+ at the same time.
+
+10. How many files does your library consist of? What are they? 
+Which one(s) do you #include?
+       
+ I have 2 files which are the implementation and interface files. 
+ The implementation file consist of functions of how the program works.
+ The interface file consist of the prototypes of the functions.
+ Lastly, all I did was #include "InputValidation.h" in to main 
+ file(implementation file).

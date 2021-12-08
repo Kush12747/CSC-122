@@ -1,0 +1,10 @@
+Name: Kush Gandhi
+Class: CSC122-001
+Levels: Level 4 + 3 = 7
+Title: Say What (project)
+
+level 4 is the base level.
+level 3 is letting the user specify a file.
+
+Description: Takes in user response to calucale the number of sentences,
+words, syllables, and index.

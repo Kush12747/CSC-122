@@ -1,0 +1,34 @@
+1. How do you compare two characters without reference to case? 
+How might you do this without destroying the character variable(s) contents?
+
+    When we compare strings, we can make them const and set
+    it equal to (==). The const will keep the same string
+    without destroying it or being changed in mid programming.
+
+2. How can you compare two strings in a case-insensitive way without 
+destroying their contents? 
+(You should not change the strings in order to compare them!)
+    
+    I've made a function called string_comparison() which takes
+    arguments of the 2 strings by making them reference of and const.
+
+3. What kind of arguments should your string comparison function take? 
+(Value, reference, constant?)
+    
+    My function takes the reference of the 2 strings and
+    are const. Also, I have included bool for skips and
+    punctuation which checks for true or false.
+
+4. How do you get that weird return value for your function? 
+Is it always -1, 0, 1? Or is there a reason it was defined as 
+simply less than 0, 0, or greater than 0?
+
+    In my function, I used if statements to compare
+    the 2 strings and if they're same then return 0,
+    else return -1 if smaller than or +1 for greater than.
+    
+5. How many times will you need to call your function to test it thoroughly? 
+How many times should you have to run the driver to do this testing?
+
+    To test a program you would do at least 3 runs to
+    check for any errors or if its working correctly.

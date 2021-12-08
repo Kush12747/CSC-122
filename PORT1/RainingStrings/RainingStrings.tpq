@@ -1,0 +1,24 @@
+1. How do you read names that might or might not contain spaces?
+    I basically used a simple function called the getline(). This
+    helps read the user input to count as a place holder in the string.
+
+2. How do you store multiple (C)strings together in a single variable?
+    By simply using a vector to store all of the information.
+
+3. How do you sort (C)strings? (Hint: Most books/sites discuss sorting with 
+respect to numbers. What might you need to modify for sorting (C)strings?)
+    I used a Bubble sort to sort the vectors.
+
+4. How can you access a single row of a 2D array?
+    To access a single row, you would use the first bracket.
+    for example, array[row][column] the first one is for row and the
+    second is for column.
+
+5. Can you pass a single (C)string from an array to, say, strcmp?
+    No, you can't compare a single Cstring because the function needs to
+    read 2 strings to compare.
+
+6. How can your 'again' question accept either characters or words? 
+   How can it be case insensitive?
+    I used a do while loop to validate the user response. For example, the user
+    ia able to enter Y or y to continue the program.

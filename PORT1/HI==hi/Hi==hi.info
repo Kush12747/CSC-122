@@ -1,0 +1,12 @@
+Name: Kush Gandhi
+Class: CSC122-001
+Title: hi==Hi (Lab)
+
+levels: 5
+1.5 hi program
+1.5: Add 2 arguments for skip spaces or puntuation
+2: sort properly without leading 0
+
+Description: Compares the string length by returning 
+values 1, -1, 0. Also, specifys any spaces skipped
+or punctuation.
