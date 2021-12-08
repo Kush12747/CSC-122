@@ -1,0 +1,11 @@
+Name: Kush Gandhi
+Tittle: Copy XYZ (Lab)
+Class: CSC122-001
+Levels: 1 + 3.5 = 4.5
+- allows place blank lines
+- allows whole line comments
+- allows end of line comments
+
+Description: Takes in user data file to copy
+the data stored in the file and transfer to 
+another file and allows comments.

@@ -1,0 +1,68 @@
+1. What weird behavior does open exhibit for output files by default? 
+   How do we fix this problem?
+
+   - It has the tendency to truncate the file. Since we don't want
+   that to happen, we need to code it properly and protect it 
+   in order for it to work.
+
+2. How much does spacing matter in the input file? The output file? 
+   (Hint: Would it matter if it weren't present at all? If there 
+   were many, many spaces?)
+
+   - The answer weighs both side becasue spacing can be impotant.
+   If we take a normal input such as cin will ignore the spaces but
+   using getline will not ignore it. The data does need to be spaced
+   so our program can read the data.
+   
+3.Problems with the (C)string piece of data:
+
+3a. What problem might you have with the (C)string data 
+    (being as it is 'mixed' with so many other data types
+    in this file: numbers and characters and such)? 
+    (Hint: Is the (C)string data one or multiple words?) 
+    Is this difficult to fix? What assumption did you make to 
+    solve this problem?
+
+    - The C-string can be many words but we should consider
+    about the user using our program on what they eneter. If so,
+    we need to use a getline function for the C-string data.
+
+3b. If the (C)string had to beplaced afterthe other data — at the 
+    end of the data group/block, what problem might arise? How do 
+    we typically avoid this situation (again, assuming the data 
+    has to be in that order)? [Assume you have re-written your 
+    code to deal with the new data order — but do not do so.]
+
+    - if the C-string was plced at the end it will still read the data
+    but not the new line since we only extract the data.
+
+3c. Think about, but do not fix, the potential problem of the user's 
+    (C)string being longer than you had anticipated. (Answer this 
+    question even if you used the string class to code your program!)
+
+    - We could use the getline function to read the name. We would place
+    it in the 2nd argument which detects the length of the C-string.
+
+4a. What function is used to tell when you've reached the end of a stream?
+
+    - We use the eof() function called end of file.
+    
+4b. Can this function be used on the keyboard stream?
+    
+    - Yes, you are able to do it by crtl-z.
+
+5. How do you pass a stream to a function?
+
+    - We need to pass it by reference.
+
+6. Why is it a good idea to make input functions ignorant of whether 
+   or not a stream is cin or a file? Output functions/cout/file?
+
+    - You can do it that way but it's not a good approach. The
+    other way is to use the ifstream and ofstream.
+
+7. Why do we close files?
+
+   - We close files becasue once we are done using them,
+   we ensure to clean the crap out since it will take up
+   unecessory data. So, we can free up space.

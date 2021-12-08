@@ -1,0 +1,17 @@
+# help me
+Jason James # name
+123456 # id number
+9.2 # gpa
+B # comment
+Tammy James # comment
+123457 11.2 A
+Familiar Kensei James
+123458 # what do i do here
+5.6 D
+Quincy 2005 is Awesome
+110121 8.4 # hi random comment
+B # grade letter
+# that is me
+Kush Gandhi # something
+777777
+4.0 A

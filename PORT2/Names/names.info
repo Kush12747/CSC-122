@@ -1,0 +1,11 @@
+Name: Kush Gandhi
+Class: CSC122-001
+Lab: Hide 'n' Go Seek
+Levels: 3.5
+0.5 = make name position look neat.
+1 = to match not whole string but a substring.
+0.5 = print all matches of a name.
+1.5 = base level program
+
+Description: Finds the position of a name in a file and outputs
+the position number with the number as well.

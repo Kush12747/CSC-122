@@ -1,0 +1,21 @@
+1. How do you handle not knowing how much data is in the file?
+
+- You could have as many names in your file. So, their is no limit
+to it. The program will find the name eventually.
+
+2. What kind of loop do you use to process the file?
+
+- My loop is in the bool function nameSearch with a while loop to
+iterate throught the files of names.
+
+3. What do you do if the person isn't found in the file?
+
+- If the person is not found in the file, then we prompt the user invalid 
+statemnt name given. After that we can loop back again for a new name from
+the user.
+
+4. Can there be more than one name on a single file line? 
+(Will your program handle it?)
+
+- The program I designed will not be able to handle more than 1 name
+on a given line becasue I am using getline to read the user response.
