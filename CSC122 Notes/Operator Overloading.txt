@@ -1,0 +1,312 @@
+Operating Overloading
+
+Take output or input for instance. We would normally have to code crap like this:
+
+ cout << "Please enter data:  ";
+    object.input();
+
+    cout << "You entered ";
+    object.output();
+    cout << ".\n";
+
+But with overloaded operators we could use the more natural pattern:
+
+cout << "Please enter data:  ";
+    cin >> object;
+
+    cout << "You entered " << object << ".\n";
+
+
+//The unary operators are: +, -, ~, !, *, &, and ->. 
+//(-> is actually a binary operator, but it overloads as a unary operator! More on that later...)
+
+The binary operators are:
+
++, -, *, /, %
+&, ¦, ^, <<, >>
+=, +=, -=, *=, /=, %=, &=, ¦=, ^=, <<=, >>=
+[], ()
+&&, ¦¦, <, <=, >, >=, ==, !=
+,
+
+cin >> x >> y;//chaining for objects
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Subscript Operators
+
+/*
+ * Even more special operators exist, however...
+ *
+ * operator[], for instance, is the subscript operator and
+ * can be overloaded to allow programmers access to your
+ * class' data members.  The members in question don't even
+ * have to be array or vector or even string elements,
+ * either!  You can use op[] to access ~anything~!  One
+ * thing helping out with this is that the subscript/index
+ * itself -- the argument to the [] operator
+ * -- doesn't have to be integral.  It should be
+ * discrete-ish, for simple sanity, but doesn't really have
+ * to be, for that matter.
+ *
+ * For instance, look at this rational class I found just
+ * laying around:
+ *
+ */
+#include <iostream>
+#include <cctype>
+#include <limits>
+
+using namespace std;
+
+inline long min(long a, long b) { return a > b ? b : a; }
+inline long max(long a, long b) { return a < b ? b : a; }
+
+long gcd(long a, long b)
+{
+    long d = max(1L,min(a,b));
+    while (a % d != 0 || b % d != 0)
+    {
+        d--;
+    }
+    return d;
+}
+
+class Rational
+{
+   long numer, denom;
+   void reduce(void)
+       { long g = gcd(numer, denom); numer /= g; denom /= g;  // lowest terms
+         if (numer == 0L) { denom = 1L; }                     // silly zero
+         if (denom < 0L) { numer = -numer; denom = -denom; }  // neg --> top
+         if (denom == 0L) { denom = -1L; }                    // stupid zero
+         return; }
+public:
+   Rational(long n = 0L, long d = 1L) : numer(n), denom(d) { reduce(); }
+
+   /*
+    * this const version of operator[] will allow the
+    * programmer having a constant Rational object to access
+    * their member data
+    */
+   long operator[](char which) const  // accessor for const Rational's
+   {
+       which=static_cast<char>(tolower(which));
+       return which=='n' ? numer
+                         : which=='d' ? denom
+                                      : -42;
+   }
+   /*
+    * n or N will retrieve the numerator; d or D will
+    * retrieve the denominator; any other character will get
+    * back the value -42 (just for fun)
+    */
+
+   /*
+    * this non-const version of operator[] will allow the
+    * programmer having a non-constant Rational object to
+    * either access OR mutate their member data
+    */
+   long & operator[](char which) // mutation/access for any other Rational's
+   {
+       static long crap;
+       which=static_cast<char>(tolower(which));
+       return which=='n' ? numer
+                         : which=='d' ? denom
+                                      : crap;
+   }
+   /*
+    * here when an invalid 'index' comes in we need a memory
+    * location to send back due to the reference on the
+    * return type that allows mutation of the member
+    * variable; since a local variable would disappear after
+    * the function returned, that is out of the question; we
+    * could also make a class member variable, but this
+    * would waste a memory location in every object
+    * instantiated of our type -- not cool; so we are left
+    * with the new idea of a static local variable; this
+    * makes the local variable stick around even when the
+    * function returns; that makes it perfect to use in a
+    * reference typed return!
+    */
+};
+
+istream & operator>>(istream & in, Rational & r);
+ostream & operator<<(ostream & out, const Rational & r);
+
+void report_const(const Rational & r)
+{
+    long a = r['n'];
+    cout << "\nI think your numerator is " << a << ", am I right?\n";
+
+    a = r['D'];
+    cout << "\nI think your denominator is " << a << ", am I right?\n";
+
+    a = r[';'];
+    cout << "\nBut what's this:  " << a << "?!\n";
+    return;
+}
+
+int main(void)
+{
+    const Rational q = 98;
+    Rational r, t(32,16);
+
+    report_const(q);
+    report_const(t);
+
+    cout << "Enter fraction:  ";
+    cin >> r;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    report_const(r);
+
+    cout << "\nPress Enter to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    /*
+     * note how the automatic reducing behavior of our class
+     * is circumvented by the new 'mutator'
+     */
+    r['n'] = 5;
+    r['d'] = 15;
+    report_const(r);
+
+    cout << "\nPress Enter to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    /*
+     * there is really ~NO~ protection what-so-ever...
+     */
+    r['n'] = '5';
+    r['d'] = (long)"15";
+    report_const(r);
+
+    cout << "\nPress Enter to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    /*
+     * this segment shows that the static local in the
+     * non-const oper[] is shared by all [non-const] objects
+     * of the class
+     */
+    cout << "r has " << r['N'] << " over " << r['d'] << " with a "
+         << r['?'] << " chaser.\n";
+
+    r['$'] = 612;
+
+    cout << "r has " << r['N'] << " over " << r['d'] << " with a "
+         << r['?'] << " chaser.\n";
+
+    cout << "q has " << q['N'] << " over " << q['d'] << " with a "
+         << q['?'] << " chaser.\n";
+
+    cout << "t has " << t['N'] << " over " << t['d'] << " with a "
+         << t['?'] << " chaser.\n";
+
+    return 0;
+}
+
+/*
+ * here we use the accessor to print the members
+ */
+ostream & operator<<(ostream & out, const Rational & r)
+{
+    return out << r['n'] << '/' << r['d'];
+}
+
+/*
+ * we could have used the 'mutator', but you saw what it did
+ * up in the main; *shiver*
+ */
+istream & operator>>(istream & in, Rational & r)
+{
+    long n, d;
+    char t;
+    in >> n >> t >> d;
+    r = Rational(n, d);
+    //r['n'] = n;
+    //r['d'] = d;
+    return in;
+}
+
+/*
+ * Although the const-ness of a method contributes to the
+ * overloadability of even operator methods and so we can
+ * have two subscript operators overloaded simultaneously --
+ * one for access and the other for mutation -- it is not
+ * necessarily a good idea to allow the programmer who
+ * happens to own the object to alter its data with
+ * impunity.  Perhaps the whole private data, use a mutator
+ * approach was a good idea, after all.
+ *
+ * Then why can we do this ...er... crap?  Well, if the data
+ * we provide mutation for is not under our protection and
+ * yet is hidden in our private area, why not?
+ *
+ * What is left, then?  Maybe we have a string, vector, or
+ * even [dynamic] array member whose essence we are
+ * protecting, but whose content is the programmer using our
+ * class' business.  Ooo...
+ *
+ *
+ * On the flip side, sometimes there are data members that
+ * we manage the content of and yet want to allow controlled
+ * change thereof even within constant objects!
+ *
+ * Such data are typically auxilliary to the actual purpose
+ * of the class such as formatting flags.  In that case, we
+ * may indeed want to allow their alteration even when the
+ * object containing them is supposed to remain constant.
+ * It is okay since they are suppportive rather than
+ * informative with respect to the class' role in the
+ * program.
+ *
+ * To make this work, mark the data member 'mutable'.  This
+ * keyword allows the data to be altered even from within a
+ * constant method (and therefore, from the scope of a
+ * constant object).
+ *
+ *
+ * On the other flip side (be our coin three-sided or 4D?!),
+ * we can accidentally break the contract of private data
+ * protection in an inadvertant way by doing something as
+ * sillily simple as:
+ *
+ *     operator const char * (void) const
+ *         { return priv_char_star_member; }
+ *
+ * Then the lazy programmer could do this:
+ *
+ *     strcpy((char*)((const char*)str_var),
+ *            "new information that won't fit");
+ *
+ * ***********************************************************
+ *
+ * BTW, typecast for Rational to double would look like
+ * this:
+ *
+ *     operator double (void) const
+ *         { return static_cast<double>(numer)/denom; }
+ *
+ * Which you could use like so:
+ *
+ *     cout << r << " is almost like "
+ *          << static_cast<double>(r) << ".\n";
+ *
+ * Or, if you prefer a more 'normal' operation:
+ *
+ *     double operator~(void) const
+ *         { return static_cast<double>(*this); }
+ *
+ * With:
+ *
+ *     cout << r << " is almost like " << ~r << ".\n";
+ *
+ * (Of course, this implementation needs the 'operator
+ * double' to work.)
+ *
+ * (Other people think ~ should do reciprocal -- flip the
+ * numerator and denominator just like ~ normally does to
+ * bits in an integer.  *shrug*)
+ */
+

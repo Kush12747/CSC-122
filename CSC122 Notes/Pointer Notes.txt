@@ -1,0 +1,95 @@
+POINTERS
+Pointer- a variable contains the address of a another memory location
+-used to access a memmorary location indirectly
+-points to a variable
+-operator
+
+ex: long x;		ex: long *p, *q;
+    long*p; //pointer
+    p = &x; //
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ret func(....type * & parg_ref....)
+    {
+        parg_ref = new_address;   // would make pmine itself point to a new destination
+    }
+
+ret func(....class_type * parg....)
+    {
+        ....parg->mutator(new_value)....//arrow operator new
+    }
+ret func(....class_type * parg....)//if not using arrow operator
+    {
+        ....(*parg).mutator(new_value)....//then do this
+    }
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ex:short var;
+    short *pvar;
+
+    var = 16;
+    cout << var << endl;    // prints 16
+
+    pvar = &var;
+    *pvar = 4;
+    cout << var << endl;    // prints 4
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-type * ptr1; //both the pointer's destination and the value at that 
+	     //address can be altered
+
+const type * ptr2a; //the pointer's destination can be altered,
+type const * ptr2b; // but the value at that address can NOT be altered
+		    but the value at that address can NOT be altered
+
+type * const ptr3 = &object; //the pointer's destination can NOT be altered, 
+			    // but the value at that address can be altered
+
+const type * const ptr4a = &object; //neither pointer's destination nor the value 
+type const * const ptr4b = ptr2a; //at that address can be altered
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				
+void print_arr(const double arr[], const size_t count, ostream & out,
+                   const short wide, const bool newline)
+    {
+        size_t i;
+        const double * parr;
+        for (parr = arr, i = 0; i < count; ++i, ++parr)
+        {
+            out << setw(wide) << *parr;
+        }
+        if (newline)
+        {
+            out << endl;
+        }
+        return;
+    }
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ITERATORS
+
+vector<double>::iterator itr;
+
+vector<double> vec;
+
+    itr = vec.begin();
+
+cout << *itr;   // print element itr iterates
+
+    *itr = 4.2;   // store 4.2 in element itr iterates
+
+if (itr != vec.end())
+    {
+        cout << *itr;   // print element itr iterates
+        *itr = 4.2;   // store 4.2 in element itr iterates
+    }
+
+
+for (itr = vec.begin(); itr != vec.end(); ++itr)
+    {
+        // use *itr -- it's safe!  (I promise...)
+    }
+
+
+
+
+
+
+
+

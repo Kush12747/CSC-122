@@ -1,0 +1,59 @@
+Overloaded Operators
+
+//to make the objects to play more nicly in the class
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Take output or input for instance. We would normally have to code crap like this:
+
+    cout << "Please enter data:  ";
+    object.input();
+
+    cout << "You entered ";
+    object.output();
+    cout << ".\n";
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+But with overloaded operators we could use the more natural pattern:
+
+    cout << "Please enter data:  ";
+    cin >> object;
+
+    cout << "You entered " << object << ".\n";
+
+List of C++ operators link
+http://www.cppreference.com/wiki/operator_precedence
+
+Overloading Rules
+
+Thou shalt not:
+
+Overload ?:, ::, ., .*, or sizeof.
+Create your own operators.
+Change the arity of operators (except for ( ) which has arbitrary arity to begin with).
+Change the precedence of operators.
+Change the associativity of operators.
+Overload operators for the built-in types.
+
+Thou shalt always:
+
+Overload =, ->, ( ), and [ ] as member functions.
+Overload anything with a non-targettype as the left-hand operand as a non-member function.
+
+Thou should always:
+
+Make the overloaded operator's meaning as close to the original as possible.
+At least make your 'clever' overloads clear/obvious.
+Overload for built-in compatibility when possible/necessary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

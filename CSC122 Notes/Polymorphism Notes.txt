@@ -1,0 +1,490 @@
+Polymorphism Notes
+
+//Polymorphism uses those methods to perform different tasks. 
+//This allows us to perform a single action in different ways.
+
+//A class having a pure virtual function, BTW, is known as
+//an abstract class
+
+A pure virtual function is a virtual function with no
+ * definition.  Not just a function prototyped to be defined
+ * later.  Not just a function never called that we forgot
+ * to define.  But a function which is planned to never be
+ * defined.
+
+
+=================================================================================
+A virtual function introduces [run-time] polymorphism
+ * into our class hierarchy.  The compiler will go to great
+ * lengths to recall the actual type of an object pointed
+ * to/referred to with a base type when a virtual function
+ * is involved.
+ *
+ * Take the following class hierarchy for example:
+ *
+ *     A --{ f, virtual g
+ *     |
+ *     B --{ f, virtual g
+ *
+ * Here I'm assuming B's versions of both f and g override
+ * the corresponding functions from A.
+ *
+ * If we instantiate a B object, we can call the functions
+ * with no problems, of course:
+ *
+ *     B b;
+ *     b.f();     // calls B::f
+ *     b.g();     // calls B::g
+ *
+ * But if we instead have an A reference or pointer to the B
+ * object, the f function no longer works -- we saw this the
+ * other day:
+ *
+ *     A & arb = b;
+ *     A * apb = &b;   // = new B()
+ *
+ *     arb.f();      // calls A::f
+ *     apb->f();     // calls A::f
+ *
+ * What about g?  It will still work, thanks to the keyword
+ * virtual and the extra efforts of the compiler surrounding
+ * its presence:
+ *
+ *     arb.g();      // calls B::g
+ *     apb->g();     // calls B::g
+
+#include <iostream>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+class base
+{
+    double a;
+
+public:
+    base(double val = 0.0) : a(val)
+        { cerr << "base created:  " << this << '\n'; }
+    base(const base & b) : a(b.a)
+        { cerr << "base (copy) created:  " << this << '\n'; }
+    virtual ~base(void)
+        { cerr << "base destroyed (" << this << ")\n"; }
+
+    virtual void print(ostream & os) const;
+};
+
+class derived_one : public base
+{
+    long a;
+
+public:
+    derived_one(long val = 0L) : base(static_cast<double>(val)+1.2), a(val)
+        { cerr << "derived created:  " << this << '\n'; }
+    derived_one(const derived_one & d) : base(static_cast<double>(d.a)+1.2),
+                                         a(d.a)
+        { cerr << "derived (copy) created:  " << this << '\n'; }
+    virtual ~derived_one(void)
+        { cerr << "derived destroyed (" << this << ")\n"; }
+
+    virtual void print(ostream & os) const override;  // overrides the base
+                                                      // class function
+    void print(void) const;  // overloads derived_one::print(ostream&)const
+};
+
+void app_print(const base * duh)
+{
+    duh->print(cout);
+    return;
+}
+
+void app_print(const base & duh)
+{
+    duh.print(cout);
+    return;
+}
+
+void app_print_two(base duh)  // not a pointer or reference...
+{
+    duh.print(cout);         // still calls base::print!
+    return;
+}
+
+int main(void)
+{
+    base bo = 4.2;
+    derived_one doo = -3L;   // you'll notice when you run this
+                             // that the base portion of doo
+                             // is constructed first and
+                             // then the derived portion!
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Displaying 'bo':  ";
+    bo.print(cout);
+    cout << "Displaying 'bo' (by reference):  ";
+    app_print(bo);
+    cout << "Displaying 'bo' (by pointer):  ";
+    app_print(&bo);
+    cout << "Displaying 'bo' (by value):  ";
+    app_print_two(bo);
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << string(70,'*') << '\n';
+
+    cout << "Displaying 'doo' (no stream):  ";
+    doo.print();
+    cout << "Displaying 'doo' (stream arg):  ";
+    doo.print(cout);
+    cout << "Displaying 'doo' (by reference):  ";
+    app_print(doo);
+    cout << "Displaying 'doo' (by pointer):  ";
+    app_print(&doo);
+    cout << "Displaying 'doo' (by value):  ";
+    app_print_two(doo);
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << string(70,'*') << '\n';
+
+    base * p = new derived_one(13);
+    // cannot call derived_one::print()const because
+    // p is a base pointer and base had no such function
+    cout << "Displaying 'p' (stream arg):  ";
+    p->print(cout);
+    cout << "Displaying 'p' (by reference):  ";
+    app_print(*p);
+    cout << "Displaying 'p' (by pointer):  ";
+    app_print(p);
+    cout << "Displaying 'p' (by value):  ";
+    app_print_two(*p);
+    delete p;
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << string(70,'*') << '\n';
+
+    return 0;
+}
+// note that destructors are still called in reverse order
+// of constructors -- even into the inheritance mechanism!
+
+void derived_one::print(void) const
+{
+    cout << "[NEW]\tobject of 'first derived class of base' type has value:  "
+         << a << ".\n\t\tand we inherited:  ";
+    base::print(cout);
+    return;
+}
+
+void derived_one::print(ostream & os) const
+{
+    os << "object of 'first derived class of base' type has value:  "
+       << a << ".\n\tand we inherited:  ";
+    base::print(os);
+    return;
+}
+
+void base::print(ostream & os) const
+{
+    os << "base type object has value " << a << ".\n";
+    return;
+}
+================================================================================
+#include <iostream>
+#include <limits>
+#include <string>
+
+using namespace std;
+
+class base
+{
+    double a;
+
+public:
+    base(double val = 0.0) : a(val)
+        { cerr << "base created:  " << this << '\n'; }
+    base(const base & b) : a(b.a)
+        { cerr << "base (copy) created:  " << this << '\n'; }
+    virtual ~base(void)
+        { cerr << "base destroyed (" << this << ")\n"; }
+
+    virtual void print(ostream & os) const;
+    void base_crap(ostream & os) const
+    {
+        print(os);    // with print to stream arg virtual, this call is virtualized, too!
+        return;
+    }
+    // when the surrounding function -- like base_crap here
+    // -- isn't virtual but still evokes virtual behavior of
+    // its calling object (when print(ostream&)const is
+    // called here), we call this dispatching (it has
+    // something to do with taxis...I'm not an etymologist,
+    // sorry)
+};
+
+class derived_one : public base
+{
+    long a;
+
+public:
+    derived_one(long val = 0L) : base(static_cast<double>(val)+1.2), a(val)
+        { cerr << "derived created:  " << this << '\n'; }
+    derived_one(const derived_one & d) : base(static_cast<double>(d.a)+1.2), a(d.a)
+        { cerr << "derived (copy) created:  " << this << '\n'; }
+    virtual ~derived_one(void)
+        { cerr << "derived destroyed (" << this << ")\n"; }
+
+    void print(ostream & os) const;  // overrides the base class function
+    // if you comment this function out, a derived_one
+    // object calling print(ostream&) would call the base
+    // function; this function's presence overrides the
+    // behavior of the base class function of the same
+    // signature (it is still virtual even without the
+    // keyword!  it is just clearer to explicitly code
+    // it...)
+};
+
+inline void app_print(base duh)
+{
+    duh.base_crap(cout);
+    return;
+}
+
+inline void app_print2(base & duh)
+{
+    duh.base_crap(cout);
+    return;
+}
+
+int main(void)
+{
+    base bo = 4.2;
+    derived_one doo = -3L;
+
+    cout << "Displaying 'bo':\n";
+    bo.print(cout);
+    cout << "Displaying 'bo' (base dispatched):\n";
+    bo.base_crap(cout);
+
+    cout << string(70,'*') << '\n';
+
+    cout << "\nPress <Enter> to move on...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Displaying 'doo':\n";
+    doo.print(cout);           // calls overriding version derived_one::print
+    cout << "Displaying 'doo' (scope resolved):\n";
+    doo.base::print(cout);     // calls base version base::print -- explicitly
+    cout << "Displaying 'doo' (base dispatched):\n";
+    doo.base_crap(cout);                   // notice how this calls the base
+    // method if there is no overriding function in the
+    // derived class (but the base function calls a virtual
+    // function so the compiler will use the original
+    // calling object's type to dispatch to the correct
+    // version of that virtual function!)
+
+    cout << string(70,'*') << '\n';
+
+    cout << "\nPress <Enter> to move on...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Displaying 'bo' (app_print copy):\n";
+    app_print(bo);
+    cout << "Displaying 'bo' (app_print ref):\n";
+    app_print2(bo);
+    cout << "Displaying 'doo' (app_print copy):\n";
+    app_print(doo);
+    cout << "Displaying 'doo' (app_print ref):\n";
+    app_print2(doo);
+
+    return 0;
+}
+
+void derived_one::print(ostream & os) const
+{
+    os << "object of 'first derived class of base' type has value:  "
+       << a << ".\n\tand we inherited:  ";
+    base::print(os);
+    return;
+}
+
+void base::print(ostream & os) const
+{
+    os << "base type object has value " << a << ".\n";
+    return;
+}
+================================================================================
+// virtual members
+#include <iostream>
+using namespace std;
+
+class Polygon {
+  protected:
+    int width, height;
+  public:
+    void set_values (int a, int b)
+      { width=a; height=b; }
+    virtual int area ()
+      { return 0; }
+};
+
+class Rectangle: public Polygon {
+  public:
+    int area ()
+      { return width * height; }
+};
+
+class Triangle: public Polygon {
+  public:
+    int area ()
+      { return (width * height / 2); }
+};
+
+int main () {
+  Rectangle rect;
+  Triangle trgl;
+  Polygon poly;
+  Polygon * ppoly1 = &rect;
+  Polygon * ppoly2 = &trgl;
+  Polygon * ppoly3 = &poly;
+  ppoly1->set_values (4,5);
+  ppoly2->set_values (4,5);
+  ppoly3->set_values (4,5);
+  cout << ppoly1->area() << '\n';
+  cout << ppoly2->area() << '\n';
+  cout << ppoly3->area() << '\n';
+  return 0;
+}
+================================================================================
+Abstract classes
+
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+
+using namespace std;
+
+class RandDist  // abstract [base] class
+{
+public:
+    virtual double generate(void) const = 0;  // pure virtual function
+    virtual ~RandDist(void) { }
+};
+
+class Uniform : public RandDist
+{
+    double a, b;
+
+public:
+    Uniform(double low = 0.0, double high = 1.0) : a(low), b(high) { }
+    virtual ~Uniform(void) { }
+
+    virtual double generate(void) const  // overrides the base class function
+        { return rand()%RAND_MAX/(RAND_MAX-1.0)*(b-a)+a; } // and makes us
+                                                           // concrete!!!
+
+};
+
+class DieRoll : public RandDist
+{
+    short sides, count, adjust;
+public:
+    DieRoll(short n = 1, short s = 6, short a = 0)
+        : sides(s), count(n), adjust(a) { }
+    virtual ~DieRoll(void) { }
+
+    virtual double generate(void) const;
+};
+
+void make_em(const string & desc, const RandDist * p);
+
+inline void done_with_it(RandDist * & p)
+{
+    delete p;
+    p = nullptr;
+    return;
+}
+
+int main(void)
+{
+    RandDist * p_dist = new Uniform(2,8);
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    make_em("uniform", p_dist);
+    done_with_it(p_dist);
+
+    p_dist = new DieRoll(2,4);
+    make_em("dice", p_dist);
+    done_with_it(p_dist);
+
+    // But we don't have to have a dynamic pointer to call a
+    // pointer-based function!
+    Uniform unif(2.0, 12.0);
+    DieRoll dice(2, 6);
+
+    make_em("uniform", &unif);
+    make_em("dice", &dice);
+
+    return 0;
+}
+
+double DieRoll::generate(void) const
+{
+    long sum = rand() % sides + 1;     // assumes count is at least 1!!!
+    for (short i = 2; i <= count; ++i)
+    {
+        sum += rand() % sides + 1;
+    }
+    return static_cast<double>(adjust + sum);
+}
+
+void make_em(const string & desc, const RandDist * p)
+{
+    cout << "Generating random " << desc << " values:\n";
+    for (short i = 0; i != 10; ++i)
+    {
+        cout << p->generate() << ' ';
+    }
+    cout << p->generate() << '\n';
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

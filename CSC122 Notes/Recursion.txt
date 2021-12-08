@@ -1,0 +1,150 @@
+Recursion Notes
+
+Recursion directly correlates to both mathematical
+ * induction and recurrence relations from math.  As in
+ * those systems, you will need to identify:
+ *
+ *   -- a base case (point of reference, starting/stopping
+ *      position, etc.)
+ *   -- a reduction step (reducing the size of the original
+ *      problem before passing it along to ...yourself)
+ *   -- a recursive call (calling yourself to finish the
+ *      job)
+ ---------------------------------------------------------------
+given an initial problem of size n
+ *     unless n is minimal,
+ *        break this into several smaller \__ reduction
+ *           problems of the same nature  /     step
+ *           and apply this approach to   \__ recursive
+ *           each                         /     call
+ *        put the smaller case answers    \
+ *           back together to answer our  |__ build
+ *           size n problem -- include    |   phase
+ *           any size n specific info     /
+ *     else
+ *        just use a canned response for  \__ base
+ *           simple case(s)               /   case(s)
+ *
+----------------------------------------------------------------------
+Memoization is a process which really makes that last
+ * 'rule' about not wasting prior calculations come to life!
+ * It basically remembers all of the previous calculations
+ * so that they need not be re-computed!
+ */
+
+long factorial_memoized(short n)
+{
+    static vector<long> fact;
+    if (fact.empty())
+    {
+        fact.push_back(1);  // 0!
+        fact.push_back(1);  // 1!
+    }
+    return n < 0 ? -1
+         : n < fact.size() ? fact[n]
+         : *(fact.insert(fact.end(),n * factorial_memoized( n - 1 )));
+//         : (fact.push_back(n * factorial_memoized( n - 1 )),fact[n]);
+}
+--------------------------------------------------------------------------
+Recursion is limited by the size of the function call
+ * stack, of course.  To show this, I've created a broken
+ * recursive function which has no base case to stop it.  It
+ * will therefore overflow its function call stack after so
+ * many calls.  To track this, I've installed a static
+ * size_t variable to count how many times this function has
+ * been called.  To help cut down the number of calls it
+ * takes, there is an array declared per invocation of the
+ * function.  Initially it only holds two doubles, but you
+ * can change this to make there be 200 or 20000 or however
+ * many doubles you desire.  You'll find that the larger the
+ * array, the less calls it takes to eat up the function
+ * call stack.
+ */
+#include <iostream>
+
+using namespace std;
+
+void broken_recursion(void)
+{
+    static size_t calls = 0;
+    ++calls;
+    double array[2] = { 0.0 };      // change the size of the array to
+                                    // see its effects on the number of
+                                    // calls you can make!
+    cerr << "I've been called " << calls << " times.\n";
+    broken_recursion();
+    return;
+}
+
+int main(void)
+{
+    broken_recursion();
+    return 0;
+}
+----------------------------------------------------------------------------
+ here in binary
+ * search, for instance, we see division used to slice the
+ * initially searched container in half:
+ */
+template <typename DataT, typename PtrT>
+size_t binsearch(const PtrT * beg,    // inclusive
+                 const PtrT * end,    // exclusive
+                 const DataT & target)
+{
+    const size_t max_size_t = static_cast<size_t>(-1);  // numeric_limits<size_t>::max()
+    size_t half_way = (end - beg) / 2,
+           found;
+    const PtrT * mid = beg + half_way;
+    return end-beg < 0 ? max_size_t                      // max_size_t when not found!
+                       : *mid == target ? mid - beg
+                                        : *mid < target ? (found = binsearch(mid+1, end, target),
+                                                           found == max_size_t ? found : half_way + 1 + found)
+                                                        : binsearch(beg, mid, target);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,152 @@
+Analysis of Algorithms
+======================
+
+*Time analysis compares two (or more) algorithms with respect
+to how long it takes them to run on a certain problem.
+
+*Space analysis compares two (or more) algorithms with
+respect to how much memory it takes them while running on a
+certain problem.
+
+*To do this we count the number of critical operations
+performed on a problem of a certain 'size'.  (Exactly what is
+a critical operation is given at this stage and will become
+increasingly intuitive as your experience grows.)  This
+counting gives us a function of problem size that determines
+how long -- in terms of critical operations -- a particular
+algorithm will take to solve the problem.
+
+3 Types of Algorithms
+-------------------------------------------------------------
+*Big-Oh specifies that one function grows at worst as rapidly
+as a reference function.
+
+*Big-Omega specifies that one function grows at least as
+rapidly as a reference function.
+
+*Big-Theta specifies that two functions grow at approximately
+the same rate.
+
+*Although a Big-Theta analysis would be nice, it is not
+always so easy to come by.  Big-Oh is easier to work with
+and is often "good enough".
+-------------------------------------------------------------
+Commonly used functions
+
+    n^n		None				Slowest
+    n!		Bogus Sort(shuffle)		   |
+    a^n 	None				   |
+  -------					   |
+    n^a		Quadratic			   |
+    n*lg(n)	n log(n)			   |
+    n		Linear	    (Linear Search)        |
+    lg(n)	logorithmic (Binary search)	   |
+    a		Constant			Fastest
+-------------------------------------------------------------
+Three graphical groupings
+
+best-case, //easy to make 
+worst-case, //easy to make
+average-case //hard to make
+--------------------------------------------------------------
+An easy way to guesstimate the Big-Oh performance of an
+algorithm is to look over its loops.  Count out how many
+times each loop operates.  If loops are nested, multiply
+their counts.  If loops are sequenced, add their counts.
+Now take the largest reference function with any coeffi-
+cient removed and you have your guesstimate.  For instance,
+the following algorithm:
+
+    for (i = 1; i <= n; ++i)
+    {
+        for (j = 1; j <= n; ++j)
+        {
+            // do something interesting
+        }
+    }
+    for (i = 1; i <= n; ++i)
+    {
+        // do something else interesting
+    }
+
+Would give us n^2 + n as the raw estimate and then dropping
+the n we'd get n^2 as the reference function guess.
+
+Guesstimating logarithms is a little tricky.  We'll talk
+more about that in discrete math.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,166 @@
+Dynamic 2D Arrays
+
+//code to make the ptr. stuff work
+//note: double ptr(*)
+
+type **arr1 = nullptr;
+    arr1 = new(nothrow) type* [ROWS];
+    if (arr1 != nullptr)
+    {
+        r = 0;
+        arr1[r] = new(nothrow) type [COLS];
+        while (arr[r] != nullptr              // we succeeded in last allocation
+            && r+1 < ROWS)             // and there is room for the ~next~ allocation
+        {
+            arr1[++r] = new(nothrow) type [COLS];   // allocate into the next spot
+        }
+        num_rows = r+1;  // adjust for 0-start
+    }
+    else
+    {
+        num_rows = 0;    // we got no space at all!
+}
+
+//after that make nested for loop
+ for (r = 0; r < num_rows; r++)
+    {
+        for (c = 0; c < COLS; c++)
+        {
+            // use arr1[r][c] like normal
+        }
+    }
+
+//after that another for loop to delete array
+for (r = 0; r < num_rows; r++)  // delete each row
+    {
+        delete [] arr1[r];
+        arr1[r] = nullptr;
+    }
+    delete [] arr1;                 // then delete the outer array
+    arr1 = nullptr;
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//2nd way is to
+
+arr2D[r][c] == arr1D[r*COLS+c]
+type * arr2 = nullptr;
+    arr2 = new(nothrow) type [ROWS*COLS];
+
+//for loop
+for (r = 0; r < ROWS; r++)
+    {
+        for (c = 0; c < COLS; c++)
+        {
+            // use arr2[r*COLS+c]
+        }
+    }
+
+//clean it up
+delete [] arr2;
+    arr2 = nullptr;
+
+inline type & map2D(type * arr, size_t row, size_t col, size_t COLS)
+    {
+        return arr[row*COLS+col];
+    }
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+OR IN A CLASS
+
+class Arr2D
+    {
+        type * arr2;
+        size_t ROWS, COLS;
+        void alloc(void) { arr2 = new(nothrow) type [ROWS*COLS]; return; }
+    public:
+        Arr2D(void) : arr2(nullptr), ROWS(0), COLS(0) { }
+        Arr2D(size_t R, size_t C) : arr2(nullptr), ROWS(R), COLS(C) { alloc(); }
+            // copy constructor left to reader!!!
+            // operator= left to reader!!!
+        ~Arr2D(void) { delete [] arr2; }
+        type & operator() (size_t r, size_t c) { return arr2[r*COLS+c]; }
+            // *ALL* error checking left to reader!!!
+    };
+
+//then loop
+ Arr2D ar(ROWS,COLS);
+    
+    for (r = 0; r < ROWS; r++)
+    {
+        for (c = 0; c < COLS; c++)
+        {
+            // use ar(r,c)
+        }
+    }
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// declaration
+    type * data = nullptr, ** arr2D = nullptr;
+
+    // allocation
+    data = new(nothrow) type [ROWS*COLS];    // allocate linearized space
+    if (data != nullptr)
+    {
+        arr2D = new(nothrow) type* [ROWS];   // allocate row pointers
+    }
+    if (arr2D != nullptr)
+    {
+        for (size_t r = 0; r != ROWS; r++)    // aim row pointers
+        {
+            arr2D[r] = data + r*COLS;
+        }
+
+        // access (in a pair of for loops)
+        arr2D[r][c]
+    }
+
+    // deallocation
+    delete [] arr2D;
+    delete [] data;
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+PARAMATERS IN MAIN FUNCTION
+Main can contain CPP, progname, libname
+
+int main(int argc, char *argv[],
+         char *env[]
+     /*, char *apple[] */)
+{
+    cout << "Received " << argc-1 << " arguments to the "
+         << argv[0] << " program.\n";
+    for (int a = 1; a != argc; ++a)
+    {
+        cout << '\t' << argv[a] << '\n';
+    }
+    cout << "Press Enter for more fun!\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Processing environment:\n";
+    char ** e = env;
+    while (*e != nullptr && **e != '\0')
+    {
+        istringstream iss(*e);
+        string var, value;
+        getline(iss, var, '=');
+        getline(iss, value);
+        cout << var << " is '" << value << "'\n";
+        ++e;
+    }
+    
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

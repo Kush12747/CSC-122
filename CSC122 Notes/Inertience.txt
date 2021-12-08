@@ -1,0 +1,266 @@
+Inheritance
+
+//Old code from the class gets copy to the new class and able to add more to it.
+
+//Inheritance is a means to re-use code from old classes in new classes.
+
+//Although programming inheritance does allow for multiple parent classes 
+//for a child class,
+
+//Parent is the original class and Child is the sublcass to it
+//Base class is our original and new class is Derived
+
+//In fact, software engineering uses these two catch
+//phrases -- "has a" and "is a"
+
+//add : to functions of child class
+===============================================================================
+#include <iostream>
+#include <limits>
+//#include <vector>
+
+using namespace std;
+
+class base
+{
+    double a;
+
+public:
+    base(double val = 0.0) : a(val) { }
+    void print(ostream & os) const;
+    void base_crap(ostream & os) const { os << "CRAP!  "; print(os); return; }
+};
+
+class derived_one : public base  // derived_one inherits publically from base
+{
+    long a;
+
+public:
+    derived_one(long val = 0L)
+        : base(static_cast<double>(val)+1.2),
+                                  // we don't inherit our parent's constructor, but we
+                                  // call it from our member initialization list
+                                  // (if we forget to call it, the parent's default ctor
+                                  // is used instead)
+          a(val) { }
+    void print(ostream & os) const;  // overrides parent's method so we can specialize
+};
+
+inline void app_print(const base & duh)
+{
+    duh.print(cout);
+    return;
+}
+
+int main(void)
+{
+    base bo = 4.2;
+    derived_one doo = -3L;
+    //vector<derived_one> dv(10);
+
+    cout << "Displaying 'bo':\n";
+    bo.print(cout);
+    cout << "Displaying 'bo' (crappy):\n";
+    bo.base_crap(cout);
+    cout << "Displaying 'bo' (via const&):\n";
+    app_print(bo);
+
+    cout << "\nPress <Enter> to see derived_one object...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Displaying 'doo':\n";
+    doo.print(cout);                            // called with a derived_one* this
+    cout << "Displaying 'doo' (crappy):\n";
+    doo.base_crap(cout);                        // called with a base* this
+
+    cout << "\nPress <Enter> to see derived_one object in another way...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Displaying 'doo' (as base*):\n";
+    doo.base::print(cout);                      // called with a base* this
+    cout << "Displaying 'doo' (via const base &):\n";
+    app_print(doo);                             // passed through a const base&
+
+    return 0;
+}
+/*
+ * these calls to base methods or functions taking base
+ * references only work in this direction.  a base object
+ * cannot call the child's methods or be passed to a
+ * function expecting a derived type object by reference or
+ * pointer.  the memory footprint for a child object is just
+ * not there at that address!  this would be so disasterous
+ * that the compiler just doesn't allow us to do it at all!
+ * (besides, the base class doesn't technically know that
+ * the child exists, right?)
+ */
+
+/*
+ * this method specializes that from our parent class base.
+ * it does its own thing for a bit and then calls through to
+ * the base method to get the original processing.  but we
+ * could have called the base method first or in the midst
+ * of our own processing -- it depends on what the base
+ * method does and how we are reusing it here.  (technically
+ * we don't even have to call the base method at all if we
+ * want to really specialize away from how it did things.)
+ */
+void derived_one::print(ostream & os) const
+{
+    os << "object of 'first derived class of base' type has value:  "
+       << a << ".\n\tand we inherited:  ";
+    /*
+     * some people want to insert the base class' a member
+     * directly with something like:
+     *
+     *     << base::a
+     *
+     * but this can't work because base::a is private within
+     * the base class -- we are in the derived_one class!
+     * you cannot under any circumstances touch your
+     * parent's privates!  that's a no-no...
+     *
+     * but we can rely on our parent's public members like
+     * its own print function:
+     */
+    base::print(os);  // rely on parent's method for our inherited portion
+    /*
+     * here the calling object is the same as the calling
+     * object for this function itself and so it is as if
+     * we'd called:
+     *
+     *     this->base::print(os);
+     *
+     * but, as usual, we don't need to type 'this->' -- it's
+     * just a waste of time.
+     *
+     * to do so, the compiler automatically reloads the
+     * derived_one* pointer into a base* pointer so that
+     * just the right portion of the data is utilized.
+     */
+    return;
+}
+
+void base::print(ostream & os) const
+{
+    os << "base type object has value " << a << ".\n";
+    return;
+}
+================================================================================
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class base
+{
+    double a;
+
+public:
+    base(double val = 0.0) : a(val) { }
+    void print(ostream & os) const;
+    //void print(void) const;
+};
+
+class derived_one : public base
+{
+    long a;
+
+public:
+    derived_one(long val = 0L) : base(val+1.2), a(val) { }
+    void print(void) const;  // the only derived_one::print
+                             // (overrides like signature in base, but
+                             // also hides other base class versions of same
+                             // name)
+    //using base::print;  // this will cause the compiler to unhide the parent
+                        // version so that derived_one objects can use it
+                        // without scope resolution
+};
+
+class derived_two : public derived_one
+{
+    char a;
+
+public:
+    derived_two(char val = 'A') : derived_one((long)val+32), a(val) { }
+    void print(ostream & os) const;  // meant to override base::print
+    void print(void) const;          // meant to override derived_one::print
+};
+
+int main(void)
+{
+    base bo = 4.2;
+    derived_one doo = -3L;
+    derived_two dot = 'Q';
+
+    cout << "Displaying 'bo' (stream arg):  ";
+    bo.print(cout);
+
+    cout << string(70,'*') << '\n';
+
+    cout << "Displaying 'doo' (void):  ";
+    doo.print();
+    //cout << "Displaying 'doo' (stream arg):  ";
+    //doo.print(cout);            // pass thru to parent function?  nope...
+    cout << "Displaying 'doo' (scoped stream arg):  ";
+    doo.base::print(cout);      // using a scope resolution
+                                // during the method call allows us to call
+                                // the hidden base method
+
+    cout << string(70,'*') << '\n';
+
+    cout << "Displaying 'dot' (void):  ";
+    dot.print();
+
+    cout << "Displaying 'dot' (stream arg):  ";
+    dot.print(cout);
+
+    return 0;
+}
+
+void derived_two::print(void) const
+{
+    cout << "[NEW]\tobject of 'second derived class of base' type has value:  "
+         << a << ".\n\t\tand we inherited:  ";
+    derived_one::print();
+    return;
+}
+
+void derived_two::print(ostream & os) const
+{
+    os << "d2 type object has value " << a << ".\n";
+    //derived_one::print();
+    // cannot pass in os because parent only took void!
+    // cannot use parent accessors because parent didn't have any!
+    base::print(os);
+    return;
+}
+
+void derived_one::print(void) const
+{
+    cout << "[NEW]\tobject of 'first derived class of base' type has value:  "
+         << a << ".\n\t\tand we inherited:  ";
+    base::print(cout);    // we don't need both of these, of course,
+    //base::print();        // but both work and that's the point...
+    return;
+}
+
+/*void base::print(void) const
+{
+    cout << "base type object has direct value " << a << ".\n";
+    return;
+}*/
+
+void base::print(ostream & os) const
+{
+    os << "base type object has value " << a << ".\n";
+    return;
+}
+
+
+
+
+
+
+
+

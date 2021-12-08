@@ -1,0 +1,23 @@
+Data in Files
+
+//The program determines the data not user
+//3 ways to sort the data which are  sequentially, in groups (often called blocks or records), and with labels
+//reads data by extraction
+ file >> ws;
+    while (!file.eof())
+    {
+        file >> x >> y;//extraction
+        // do something with x and y just read
+        file >> ws;
+    }
+//Labled Data Layout
+    name = Joe
+    class = Soph
+    gpa = 4
+    branch = Valley Lane
+    name = Sally
+    class = Fresh
+    gpa = 11
+    branch = Mountain View
+//there are also multiple styles of comments: whole line, end-of-line, and block. 
+//since whole line comments are really a subset of end-of-line comments

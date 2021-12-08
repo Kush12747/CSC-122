@@ -1,0 +1,358 @@
+Dynamic Memmory Notes
+
+The way that you would request such extra memory is with
+the operators new and new[].
+
+EXAMPLE 1:
+#include <iostream>
+using namespace std;
+
+int main(void)
+{
+    double * p, * q;           // should've initialized to nullptr *snaps fingers*
+
+    p = new double;            //p = new double(4.2);
+    q = new double [10];       // ten elements all default constructed
+                               // (note that the 10 can be any integer
+                               // expression -- not just literals or
+                               // constants)
+    if (p != nullptr)
+    {
+        *p = 42;
+    }
+    if (q != nullptr)
+    {
+        *q = 4.2;
+        q[3] = 2.4;
+    }
+
+    if (p != nullptr)
+    {
+        cout << *p << '\n';   // p[0]
+    }
+    if (q != nullptr)
+    {
+        cout << q[0] << '\t' << *(q+3) << '\n';
+    }
+
+    /*
+     * To release the memory back to the OS when you are
+     * done, use either the delete or delete[] operator as
+     * appropriate for the original allocation.  (If the
+     * program will continue to run for a bit -- or you are
+     * just extra careful -- you may wish to assign the nullptr
+     * address to your deallocated pointer.  The OS will
+     * retrieve the released memory, but NEITHER it NOR the
+     * deletes will alter your pointer's content.  That is,
+     * you'd still have the dynamic [heap] address and could
+     * technically, if not legally, access it!!!)
+     *
+     */
+    delete p;   // may also wish to do 'p=nullptr;' if you are fastidious
+    delete [] q; // likewise 'q=nullptr;' -- just in case of accidents...
+
+    /*
+     * *****************************************************
+     *
+     * What, some of you might be thinking, about const
+     * pointers?  Can they be dynamically allocated?
+     *
+     * Let's see:
+     */
+
+    double * const z = new double [12];
+
+    if (z != nullptr)
+    {
+        *z = 3.4;
+        cout << z[0] << '\n';
+    }
+
+    delete [] z;         // but here we can't do 'z = nullptr;'
+                         // because z is a constant pointer
+
+    return 0;
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+EXAMPLE 2:
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+inline double * get_space(double * & p, size_t count = 1)
+{
+    return p = count > 1 ? new double [count] : new double;
+}
+
+inline double * deallocate_sing(double * & p)
+{
+    delete p;
+    p = nullptr;
+    return p;
+}
+
+inline double * deallocate_arr(double * & p)
+{
+    delete [] p;
+    p = nullptr;
+    return p;
+}
+
+inline void read_nums(double * arr, size_t max, const string & prompt = "")
+{
+    if (arr != nullptr)
+    {
+        cout << prompt;
+        for (size_t i = 0; i < max; ++i)
+        {
+            cin >> arr[i];
+        }
+    }
+    return;
+}
+
+inline double sum(double & total, const double * arr, size_t max)
+{
+    total = 0.0;
+    if (arr != nullptr)
+    {
+        for (size_t i = 0; i < max; ++i)
+        {
+            total += arr[i];
+        }
+    }
+    return total;
+}
+
+inline double sum(const double arr[], size_t max)
+{
+    double tot;
+    sum(tot, arr, max);
+    return tot;
+}
+
+inline
+size_t get_uint(const string & prompt = ""
+            /*, const string & errmsg  = "" */ )
+{
+    size_t num;
+    cout << prompt;
+    cin >> num;/*
+    while (num < 0)  // maybe check fail?
+    {
+        cerr << errmsg;
+        cout << prompt;
+        cin >> num;
+    }*/
+    return num;
+}
+
+int main(void)
+{
+    double *pdata = nullptr;
+    size_t num_data;
+
+    num_data = get_uint("How many values do you have?  ");
+
+    if (num_data == 0)
+    {
+        cout << "Okay, then...have a nice day!" << endl;
+    }
+    else
+    {
+        get_space(pdata, num_data+1);  // extra space for sum
+        if (pdata != nullptr)
+        {
+            read_nums(pdata, num_data, "Enter values:  ");
+
+            cout << "Adding values...";
+            sum(pdata[num_data], pdata, num_data);
+
+            cout << "Sum:  " << pdata[num_data] << endl
+                 << "Avg:  " << pdata[num_data]/num_data
+                 << endl;
+        }
+        else
+        {
+            cout << "\n\aUnable to allocate space for "
+                 << num_data << " values!\n\n"
+                 << "Please shut down other applications first..."
+                 << endl;
+        }
+        deallocate_arr(pdata);
+    }
+
+    cout << "\n*wave*  See you later!\n" << endl;
+
+    return 0;
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Example 3 Dynamic memmory in classes
+
+class DynC {
+	double * p;    // p points to a dynamic array of data
+	size_t max,    // allocated maximum elements
+               cur;    // currently used elements
+public:
+DynC(void): p(nullptr), max(0), cur(0) {}
+ 
+DynC(size_t MAX): p(new(nothrow) double[MAX]), max(MAX), cur(0) {
+	max = p == nullptr ? 0 : max;
+}
+
+~DynC(void) {    // destructor (also dtor)
+ 	delete [] p;
+     // p = nullptr;
+     // max = cur = 0;
+   }
+};
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+To fix the problems caused by the compiler-supplied copy
+constructor, we can do something like this:
+
+DynC::DynC(const DynC & dc)
+    : p(new(nothrow) double[dc.max]), max(dc.max), cur(dc.cur)
+{
+    if (p != nullptr)
+    {
+        for (size_t i = 0; i != cur; ++i)
+        {
+            p[i] = dc.p[i];
+        }
+    }
+    else
+    {
+        cur = max = 0;
+    }
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+* Ta-da!  So, putting all this together we get:
+
+#include <iostream>
+#include <new>
+
+using namespace std;
+
+class DynC
+{
+    double * p;
+    size_t max, cur;
+public:
+    DynC(void) : p(nullptr), max(0), cur(0) { cerr<<"defaulting:  "<<this<<"\n"; }
+
+    DynC(size_t MAX) : p(new(nothrow) double[MAX]), max(MAX), cur(0)
+        { cerr<<"size allocating:  "<<this<<"\n"; max = p == nullptr ? 0 : max; }
+
+    DynC(const DynC & dc);
+
+    ~DynC(void) { cerr<<"destroying:  "<<this<<"\n"; delete [] p; /* p = nullptr; max = cur = 0; */ }
+
+    DynC & operator=(const DynC & dc);
+
+    // accessor and mutator patterns for p should resemble those as for any
+    // array member of a class
+    //
+    // if reallocation (growth/shrinkage) is desired, make it automatic within
+    // the class -- don't allow the programmer using the class to control it
+    // via method calls  (i.e. make the grow/shrink functions private so they
+    // can't call them)
+};
+
+DynC::DynC(const DynC & dc)
+    : p(new(nothrow) double[dc.max]),
+      max(dc.max), cur(dc.cur)
+{
+    cerr<<"creating:  "<<this<<" from "<<&dc<<"\n";
+    if (p != nullptr)
+    {
+        for (size_t i = 0; i != cur; ++i)
+        {
+            p[i] = dc.p[i];
+        }
+    }
+    else
+    {
+        cur = max = 0;
+    }
+}
+
+DynC & DynC::operator =(const DynC & dc)
+{
+    cerr<<"assigning:  "<<this<<" = "<<&dc<<";\n";
+    if ( &dc != this )  // not copying myself, right?
+    {
+        cerr<<"not to myself!\n";
+        delete [] p;  // throw away the old me!
+
+        p = new(nothrow) double[dc.max];  // make a new me?
+        if (p != nullptr)
+        {
+            max = dc.max;   // yea!  now...
+            cur = dc.cur;   //          ...to copy...
+            for (size_t i = 0; i != cur; ++i)  //  ...over their stuff!
+            {
+                p[i] = dc.p[i];
+            }
+        }
+        else
+        {
+            cur = max = 0;  // crap!!  *snaps fingers*
+        }
+    }
+    return *this;   // _this_ automatically points to the calling object
+}
+
+// every one of the objects below will test the ~DynC (dtor)
+
+void copy_ctor_test(DynC arg)
+{
+    return;
+}
+
+void copy_ctor_test2(const DynC & arg)
+{
+    DynC B(arg);
+    return;
+}
+
+// what about return by value to test copy construction?
+// what about allocation to a size?
+int main(void)
+{
+    DynC A;
+    copy_ctor_test(A);
+    copy_ctor_test2(A);
+
+    {
+        DynC B(A);       // baby copy ctor test
+    }
+
+    DynC B(A), C = A,    // more copy ctor tests
+         D;
+
+    D = A;                // operator= test
+
+    A = A;                // self assignment test
+
+    D = C = A;            // multi-assignment test 1
+
+    (D = C) = A;          // multi-assignment test 2
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

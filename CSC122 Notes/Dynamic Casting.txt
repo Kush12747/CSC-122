@@ -1,0 +1,44 @@
+
+
+The dynamic_cast<test_for_type*>(actual*) operator will
+Different Types of Casting
+
+* check if the actual object pointed to is of the type we
+ * are testing for.  If it is, the address will be returned
+ * in the guise of the properly typed pointer.  We can store
+ * this and use it to call functions more specific to the
+ * new type.
+ *
+ * In fact, 'is' here is quite general.  To the compiler, a
+ * pointer is of the correct type if the true type is any
+ * descendant of the requested type.  So when we store the
+ * new pointer, we can narrow our knowledge further and use
+ * a more limited language shared in a sub-tree of our
+ * hierarchy!
+
+//Dynamic Cast: A cast is an operator that converts data from one type to another type
+
+The typeid operator -- only valid if you #include the
+ * typeinfo library -- can be used to access Run-Time Type
+ * information.  (RTTI stands for Run-Time Type
+ * Identification...)  More below...
+
+//must include #include <typeinfo>
+
+
+
+\(*-*)
+  ))Z
+  /\
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,398 @@
+More Operator Overloading
+
+Advantages of using operator() are preserving state, multiple access path, and
+multiple concurrent states
+
+Preserving State
+----------------
+
+ * State refers to the current status of something -- the
+ * collective values of its internals at an instant in time.
+ *
+ * One advantage of a function object is its innate ability
+ * to preserve state between calls to its methods (and
+ * remember operator() must be a member function!).  This is
+ * done with its member variables, of course.  They stick
+ * around between calls, after all.
+ *
+ * For a regular function to do this it would need static
+ * local variables.  *bleah*  These can be messy and -- for
+ * some -- a little scary.
+ *
+ * Multiple Access Paths
+ * ---------------------
+ *
+ * Another advantage of function objects over plain
+ * functions is their ability to manipulate their state
+ * through multiple method calls.  Since the member
+ * variables are visible in common to all class methods, any
+ * of them can use them.  These access paths could be normal
+ * methods or other operators -- even other overloads of
+ * operator()!
+ *
+ * For a plain function to do this, it would need specially
+ * defaulted arguments or -- worse -- overloaded pals and a
+ * *GLOBAL* variable for its state preservation!!!  (Okay,
+ * so the global could be made static so it is only file
+ * scope, but still that's just *WRONG*!!!)  (Okay, so you
+ * could place this variable in a namespace to hide it
+ * pretty well and avoid or at least lessen the chances of
+ * conflict.  But it creeps me out!)
+ *
+ * Multiple Concurrent States
+ * --------------------------
+ *
+ * Function objects also have the advantage of being unique
+ * entities.  That is, each one has its own copy of the
+ * state members and can track an independent variation of
+ * activity concurrently alongside other object instances of
+ * the function object class.
+ *
+ * Since the collection of overloaded plain functions would
+ * have to share a single [static] global instance of their
+ * state variables, they'd be a single entity in your
+ * program.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For example code, 
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <limits>
+
+using namespace std;
+
+// data generator class (stream originator?)
+class DieRoll // dDs+a
+{
+    /*
+     * these members will not change throughout an object's
+     * life but each object gets to have its own set of
+     * values in them different, perhaps, than the values of
+     * other objects' members
+     */
+    const short dice, sides, adjustment;
+
+public:
+    /*
+     * const members must be initialized in the member
+     * initialization list -- before any class code begins
+     * to work with them
+     */
+    DieRoll(short s=6) : dice(1), sides(s), adjustment(0) { }
+    DieRoll(short d, short s) : dice(d), sides(s), adjustment(0) { }
+    DieRoll(short d, short s, short a) : dice(d), sides(s), adjustment(a) { }
+    /*
+     * this const mark doesn't have to do with the members
+     * being const so much as a design decision to allow the
+     * function to be called on any class object
+     */
+    long operator() (void) const;  // rolls the dice and returns the tops' pip total + adjustment
+};
+
+
+
+// data processor class (skimmer? scraper?)
+class Largest
+{
+    long max_so_far, count;
+
+public:
+    Largest(void) : max_so_far(0), count(0) { }
+    Largest(long max) : max_so_far(max), count(1) { }
+
+    long operator() (long next)
+    {
+        count++;
+        return max_so_far = count == 1 ? next
+                                       : next > max_so_far ? next
+                                                           : max_so_far;
+    }
+    long operator() (void) const
+    {
+        return max_so_far;
+    }
+
+    long reset(void)
+    {
+        long max = max_so_far;
+        max_so_far = count = 0;
+        return max;
+    }
+    long reset(long max)
+    {
+        count = 1;
+        max ^= max_so_far; max_so_far ^= max; max ^= max_so_far;  // fancy swap
+        return max;
+    }
+
+    long get_count(void) const { return count; }
+};
+
+int main(void)
+{
+    DieRoll standard, DnD(3,8,-2), flip(2);
+    Largest max, std, dnd;
+
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    cout << "Standard die roll from variable:  " << standard()
+         << '\n';
+    // the next call looks like this:  DieRoll(17).operator()()
+    cout << "Not-so-standard die roll from temporary object:  "
+         << DieRoll(17)() << '\n';
+    cout << "3d8-2 roll:  " << DnD() << '\n';
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+
+    // track 5 rolls of DnD-style dice for maximum value
+    for (long crap = 0; crap != 5L; crap++)
+    {
+        // calling:  max.operator()(DnD.operator()());
+        max(DnD());
+    }
+    cout << "Largest DnD-style die roll:  " << max() << '\n';
+
+
+
+    // now track 5 rolls of a standard 6-sider for maximum
+    // value
+    max.reset(standard());
+    for (long crap = 1; crap != 5L; crap++)
+    {
+        max(standard());
+    }
+    cout << "Largest standard die roll:  " << max.reset()
+         << '\n';
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    // now track separate, concurrent maximums -- one on
+    // each sequence!  (five each)
+    cout << "\nTracking two sequences concurrently:\n\n";
+    for (long crap = 0; crap != 5L; crap++)
+    {
+        dnd(DnD());
+        std(standard());
+    }
+    cout << "Largest DnD-style die roll:  " << dnd() << '\n';
+    cout << "Largest standard die roll:  " << std() << '\n';
+
+    cout << "\nPress <Enter> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    // now we are tracking two sequences concurrently, but
+    // they are asynchronous in their arrival...  (50 total)
+    cout << "\nTracking concurrent, asynchronous sequences:\n\n";
+    dnd.reset();
+    std.reset();
+    for (long crap = 0; crap != 50L; crap++)
+    {
+        if (flip() == 1)
+        {
+            dnd(DnD());
+        }
+        else
+        {
+            std(standard());
+        }
+    }
+    cout << "Largest of " << dnd.get_count()
+         << " DnD-style die rolls:  " << dnd() << '\n';
+    cout << "Largest of " << std.get_count()
+         << " standard die rolls:  " << std() << '\n';
+    return 0;
+}
+
+// the generator function itself...
+long DieRoll::operator() (void) const
+{
+    long total = adjustment;
+    for (short d = 1; d <= dice; d++)
+    {
+        total += rand() % sides + 1;
+    }
+    return total;
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
+ * A Try With Plain Functions
+ * ==========================
+ *
+ * Round One
+ * ---------
+ *
+ * To accomplish, say, the Largest facility in plain
+ * function form, you'd need something like this:
+ *
+ *     inline short largest(short next = 0)
+ *     {
+ *         static short max_so_far = next;
+ *         return max_so_far = next > max_so_far ? next : max_so_far;
+ *     }
+ *
+ * Then the application could call largest() to retrieve the
+ * largest value seen thus-far -- assuming that 0 was less
+ * than the current largest state, of course.  They could
+ * call largest(new_value) to test and set a new value into
+ * the largest state.
+ *
+ * **************************************************************
+ *
+ * Allowing Reset
+ * --------------
+ *
+ * But how do they reset the largest state for a separate
+ * run?  They can't.  The state within this algorithm
+ * continues to grow bounded only by the data type itself.
+ * I think we're screwed with this implementation.  NEXT!!
+ *
+ * Let's try this:
+ * 
+ *     inline short largest(short next = 0, bool reset = false)
+ *     {
+ *         static short max_so_far = next;
+ *         if (reset)
+ *         {
+ *             max_so_far = next;
+ *         }
+ *         return max_so_far = next > max_so_far ? next : max_so_far;
+ *     }
+ *
+ * Now they can reset by passing a second parameter of true.
+ *
+ * But they still cannot retrieve the current state without
+ * knowing the current state.  Our default guess of 0 is not
+ * general enough.  They may have seen a sequence of
+ * negative values and then calling largest() would actually
+ * disrupt their accumulation of the largest value by
+ * arbitrarily setting it to 0.  NEXT!!
+ *
+ * **************************************************************
+ *
+ * Fixing The All Negative Case
+ * ----------------------------
+ *
+ * Let's try:
+ *
+ *     enum LargestAction { Evaluate, Reset, Retrieve };
+ *
+ *     inline short largest(short next = 0,
+ *                          LargestAction act = Evaluate)
+ *     {
+ *         static short max_so_far = next;
+ *         if (act == Reset)
+ *         {
+ *             max_so_far = next;
+ *         }
+ *         else if (act == Retrieve)
+ *         {
+ *             next = max_so_far;
+ *         }
+ *         return max_so_far = next > max_so_far ? next : max_so_far;
+ *     }
+ *
+ * *whew*  Now they can call largest(new_value, Reset) to
+ * reset the accumulation sequence or largest(???, Retrieve)
+ * to merely look at the current state.  Calling
+ * largest(new_value) will as usual evaluate the new value
+ * into the state.
+ *
+ * **************************************************************
+ *
+ * Less Clunky But...
+ * ------------------
+ *
+ * It works, but it kinda sucks, too.  That extra parameter
+ * (the first one) required to retrieve the current state is
+ * kinda bogus.
+ *
+ * Let's try:
+ *
+ *     static short max_so_far = 0;
+ *
+ *     inline short largest(short next)
+ *     {
+ *         return max_so_far = next > max_so_far ? next : max_so_far;
+ *     }
+ *
+ *     inline short largest(void)
+ *     {
+ *         return max_so_far;
+ *     }
+ *
+ *     inline short largest_reset(short new_value = 0)
+ *     {
+ *         new_value ^= max_so_far;
+ *         max_so_far ^= new_value;
+ *         new_value ^= max_so_far;
+ *         return new_value;
+ *     }
+ *
+ * Now we can perform all the actions our function object
+ * class could at the expense of a [static] global variable.
+ * *shiver*
+ *
+ * **************************************************************
+ *
+ * Multiple, Simultaneous Sequences?
+ * ---------------------------------
+ *
+ * Even if we hide the global variable inside a namespace to
+ * avoid collision with other identifiers, we'll still
+ * suffer the single sequence state problem mentioned
+ * earlier.  The function object class can be instantiated
+ * multiple times -- concurrently -- so that our program has
+ * multiple largest calculations happening simultaneously.
+ *
+ * To do something like this with the function [set], we'd
+ * have to have much more book-keeping such as a vector of
+ * maximums and an index position to flag which maximum was
+ * being looked at, reset, and/or adjusted.  This would not
+ * only be tricky for us, but also for the caller as they'd
+ * have to track the maximum indices for each of their
+ * sequences.  (This tracking could also be foisted off on
+ * the caller.  At first this option seems in poor taste,
+ * but it actually leads to cleaner design.  They know the
+ * purpose of their concurrent streams and can, for
+ * instance, make an enumeration or even use a parallel
+ * string container to name them nicely rather than have us
+ * assign them arbitrary numbers.  It will make their code
+ * bulkier, but more readable at the same time!)
+ *
+ */
+
+/*
+ * Summary
+ * =======
+ *
+ * So, once again, the function call operator is
+ * WAAAAAAAAYYYYYY cool because:
+ * 
+ *   -- it allows your class' objects (function objects) to
+ *      act like functions
+ *   -- it can have member variables to store state --
+ *      configuration or operational -- between calls to
+ *      operator()
+ *   -- it can use other member functions (or friends) to
+ *      update (or just retrieve) the state in multiple
+ *      ways; even other overloads of operator()!
+ *   -- it can be [easily] instantiated multiple times to
+ *      track/produce multiple [concurrent] streams of data!
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+

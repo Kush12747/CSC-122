@@ -1,0 +1,66 @@
+Templates
+
+Using templates, we can do just that:
+ *
+ *     template < typename SwapT >
+ *     void swap ( SwapT & a, SwapT & b )  // both arguments exactly same type
+ *     {
+ *         SwapT c;                        // default constructor
+ *         c = a;                          // \ 
+ *         a = b;                          //  |-- operator= with self
+ *         b = c;                          // /
+ *         return;
+ *     }
+
+
+
+Like [run-time] polymorphism, templates can basically enforce a common
+ * language amongst the different types which can be used to instantiate a
+ * template.  Polymorphism specifies the language all of a class' descendants
+ * will share via virtual functions.  A template specifies a language via its
+ * template type requirements and then data types attempting to instantiate
+ * are merely tested to see that they indeed know the proper language before
+ * they are allowed a binary form.  (The template mechanism is often referred
+ * to as compile-time polymorphism.  That's why some people don't just call
+ * polymorphism that but rather run-time polymorphism.)
+ *
+
+
+
+Since it has supplied a constructor, the compiler won't give it a default
+ * constructor.  (It still gets a copy constructor, because that is considered
+ * too vital to skimp on.  But no default ctor if you've already taught
+ * yourself to construct in ~some~ way!)
+ *
+ * Because this can fail, some would write the swap template this way instead:
+ *
+ *     template < typename SwapT >
+ *     void swap ( SwapT & a, SwapT & b )   // both args exactly same type
+ *     {
+ *         SwapT c = a;                     // copy constructor
+ *         a = b;                           // \__ operator= with self
+ *         b = c;                           // /
+ *         return;
+ *     }
+
+=================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

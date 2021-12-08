@@ -1,0 +1,129 @@
+Exceptions
+
+//first need to try to see if it works then throw
+//#include <stdexcept>  // header where specific exceptions are defined
+#include <new>            // header that has the allocation exception
+
+--------------------------------------------------------------------------
+When these things happen, we use the phrase "throws an
+ * exception" because that is what the function in peril
+ * does:
+ *
+ *     if ( something went wrong )
+ *     {
+ *         throw exception();
+ *     }
+ *
+ * Or more particularly:
+ *
+ *     if ( something went wrong )
+ *     {
+ *         throw out_of_range("function name -- details");
+ *     }
+--------------------------------------------------------------------------
+//an example of try
+
+	try
+        {
+            cout << "\nThe 6th letter of your word is:  '"
+                 << word.at(5) << "'.\n";
+            // You can put several functions in here that
+            // all cause the same exception and just catch
+            // once at the end of the code if you want.
+        }
+        catch (const out_of_range & ex)
+---------------------------------------------------------------------------
+
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <limits>
+#include <stdexcept>  // header where specific exceptions are defined
+
+using namespace std;
+
+int main(void)
+{
+    string word;
+    bool repeat;
+
+    repeat = true;
+    while ( repeat )
+    {
+        repeat = false;
+        cout << "Please enter your word:  ";
+        cin >> word;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        try
+        {
+            cout << "\nThe 6th letter of your word is:  '"
+                 << word.at(5) << "'.\n";
+            // You can put several functions in here that
+            // all cause the same exception and just catch
+            // once at the end of the code if you want.
+        }
+        catch (const out_of_range & ex)
+        {
+            repeat = true;
+            cout << "\nYour word isn't long enough for our purposes.\n"
+                    "Please try again with a longer word...\n";
+            //cout << "\nSpecifically, the function said:  " << ex.what()
+            //     << '\n';
+            //cout << "\nThe first letter of your word is:  '"
+            //     << word.at(0) << "'.\n";
+        }
+        /*
+         * if your try has functions that cause multiple
+         * types of exceptions, you can have multiple catch
+         * blocks to follow it and catch each type
+         * separately
+         */
+        /*catch (...) // catch any exception -- can follow other catch blocks
+        {
+            cout << "\nSomething crazy happened!  I don't know what it was, "
+                    "but it went that way!\n";
+        }*/
+    }
+
+    cout << "\nHit Enter to find out how the cmath library handles \""
+            "exceptional\" cases...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    /*
+     * Not every library function throws exceptions,
+     * however.  cmath is much more internal than that.
+     */
+    cout << "\nBTW, did you know that the square root of -1 is:  "
+         << sqrt(-1) << ".\n";
+    cout << "\nBTW, did you know that the square root of -1 is:  "
+         << pow(-1, .5) << ".\n";
+    cout << "\nBTW, did you know that the logarithm of -1 is:  "
+         << log(-1) << ".\n";
+    cout << "\nBTW, did you know that the logarithm of 0 is:  "
+         << log(0) << ".\n";
+
+    return 0;
+}
+---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

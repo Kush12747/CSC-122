@@ -1,0 +1,148 @@
+Linked Lists
+
+*Linear singly linked list*
+
+//start from head 
+//end is tail
+//we can access a list in front and back end
+
+//inputing (before -> next = new Node(data, follows);)
+//removing (target = -----; //1
+            before -> next = target -> next; //2
+            delete tartget; //3)
+
+
+Linked lists provide for improved memory management
+ * patterns as well as speedier insertion and removal
+ * compared to a traditional array.  However, they have
+ * slowed access patterns due to having to follow so many
+ * pointers from element to element.
+ *
+ *              |      Array       |            Linked List
+ *   -----------+------------------+------------------------------------
+ *   insert     |       O(n)       |                O(1)
+ *    (at known |                  |
+ *     location)|                  |
+ *   -----------+------------------+------------------------------------
+ *   remove     |       O(n)       |                O(1)
+ *    (known    |                  |
+ *     location)|                  |
+ *   -----------+------------------+------------------------------------
+ *   access     |       O(1)       |                O(n)
+ *    element   |                  |
+ *   -----------+------------------+------------------------------------
+ *   excess     |       0-100%     |  100*sizeof(void*)/sizeof(Item) %
+ *    memory    |                  |
+ *   -----------+------------------+------------------------------------
+ *   holes in   |    multiples of  |          all same size
+ *    memory    |      one another |
+ *   -----------+------------------+------------------------------------
+ *    memory    |       few        |             many
+ *    'talks'   |   (amortizes)    |        (all nodes separate)
+ *    with OS   |                  |
+ *
+
+//finding a target in a singly linked list
+
+before = nullptr;
+target = head;
+while (target != nullptr && target->data != value_to_find)
+{
+     before = target;
+     target = target->next;
+}
+//either before + target are in the list
+//or before is in the list and target is nullptr and out of list
+//or before is nullptr and target is int list head of it
+----------------------------------------------------------------------------
+template <typename DataT>
+class LinkedListNode
+{
+    DataT data;
+    LinkedListNode * next; //, * prev;
+public:
+    // need ctors, ...do NOT do dtor or op= (unless private/broken to NOT
+    //                                       delete 'next')
+    // accessors, mutators
+};
+
+template <typename DataT>
+class LinkedList
+{
+    size_t current_contained;
+    LinkedListNode<DataT> * head; //, * tail;
+public:
+    // need ctors, dtor, op=
+    // insert, locate, remove
+};
+
+/*
+ * The above is a singly-linked list.  There are also doubly-linked lists
+ * which have both next and previous pointers in each node.  This can improve
+ * access speeds for long lists where locality (front vs. rear) is known.
+ *
+ * The above is also a linear linked list.  There are also circular linked
+ * lists in which the final element points back to the head rather than to
+ * nullptr.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

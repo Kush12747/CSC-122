@@ -1,0 +1,70 @@
+Overloading with enum
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+enum MyData { One, Two, Three };
+
+inline ostream & operator << (ostream & os, const MyData & x)
+{
+    return os /*<< "MyData:  "*/ << static_cast<short>(x)+1;
+}
+
+inline MyData & operator++(MyData & x)
+{
+    switch (x)
+    {
+        case One:    x = Two;    break;
+        case Two:    x = Three;  break;
+        case Three:  x = One;    break;
+    }
+    return x;
+    //return static_cast<MyData&>(++static_cast<short&>(x)%=3);
+}
+
+enum TrafficLight { Red, Yellow, Green };
+
+inline ostream & operator<<(ostream & os, const TrafficLight & t)
+{
+    const string trafficLightNames[3] = { "red", "yellow", "green" };
+    return os << trafficLightNames[t];
+}
+
+inline TrafficLight & operator++(TrafficLight & t)
+{
+    switch (t)
+    {
+        case Red:    t = Green;    break;
+        case Yellow: t = Red;      break;
+        case Green:  t = Yellow;   break;
+    }
+    return t;
+}
+
+inline TrafficLight operator++(TrafficLight & t, int)
+{
+    TrafficLight x = t;
+    ++t;
+    return x;
+}
+
+int main(void)
+{
+    MyData y = Two;
+    cout << y << endl;
+    cout << "vs.\n";
+    cout << static_cast<short>(y) << endl;
+    cout << "\nAnd let's not forget that ++(++" << y << ") is ";
+    cout << ++(++y) << endl;
+
+    TrafficLight t = Green;
+    cout << t << endl;
+    cout << "vs.\n";
+    cout << static_cast<short>(t) << endl;
+    cout << "\nAnd let's not forget that ++(++" << t << ") is ";
+    cout << ++(++t) << endl;
+
+    return 0;
+}

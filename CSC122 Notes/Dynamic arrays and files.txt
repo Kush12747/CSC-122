@@ -1,0 +1,95 @@
+Dynamic Array Re-Allocation notes
+
+   attempt to allocate new space
+ * -- if successful,
+ *    -- copy old data over to new space
+ *    -- deallocate old space
+ *    -- re-point pointer
+ *    -- nullptr-out temporary pointer
+ *    -- update length/size counter(s)
+
+ t = new(nothrow) double [physical_size + more_space];
+    if (t != nullptr)
+    {
+        okay = true;
+        physical_size += more_space;
+        logical_size = min(logical_size, physical_size);
+        for (size_t i = 0; i != logical_size; ++i)
+        {
+            t[i] = p[i];
+        }
+        delete [] p;
+        p = t;
+        //t = nullptr;
+    }
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Files notes
+
+ifstream data_file;
+string file name;
+cout << Enter file name: ;
+getline(cin, filen name)
+data_file.open(fname);
+
+data_file >> ws;//white space
+//hack while loop
+while(!data_file.eof()) {
+  data_file >> num;
+cout << "number read '" << num << "\n";
+data_file >> ws;
+}
+data_file.close();//ensure to clear the crap of memmory
+data_file.clear();
+
+//pesudocode for opening files
+get name
+try to open//for input
+while (failed) {
+  close
+  clear
+  errror message
+  get name
+  try to open//for open
+}
+
+abort = okay = false;
+do {
+     get name
+     open for input
+     if(success){
+	overwrite or append or new name
+        abort = gave up
+        okay = overwrite or append
+}
+else
+{
+	yea its safe
+	okay  = true;
+}
+close input connection and clear
+} while (!kay && !abort);
+if (okay) {
+  open for output
+  close
+}
+else
+{
+  sorry!
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

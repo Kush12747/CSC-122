@@ -1,0 +1,94 @@
+Queues
+
+//Queues are based on the idea of standing in line at the market or bank.
+
+//Operations on a queue are enque and deque.
+//Queues also benefit from private inheritance just like
+//stacks did:
+-------------------------------------------------------------------------
+
+template <typename DataT>
+class Queue : private LinkedList<DataT>
+{
+public:
+    // need ctors, dtor, op=
+    // deque, enque, any other helpers
+    void enque(const DataT & d)
+    {
+        insert_at_tail(d);    // call thru to LinkedList::insert_at_tail()
+        return;
+    }
+    DataT deque(void)
+    {
+        DataT d = get_head();
+        remove_from_head();
+        return d;
+    }
+    // (have these call thru to our ancestor's methods...)
+    // (our private inheritance mode precludes the
+    // programmer from calling them directly and getting
+    // around our access policy!)
+};
+---------------------------------------------------------------------------
+
+Why a queue?
+ *
+ *    -- print jobs line up as they arrive to be processed
+ *    -- email routing would most likely be performed in a
+ *       first-come-first-served basis:  a queue
+ *    -- processes/threads might queue up to await being run
+ *       through the CPU
+ *    -- the keyboard buffer is a circular queue (15
+ *       characters by default, but upgraded by most modern
+ *       OSes)
+ *
+ * If you need to store your queue in a [non-dynamic] array,
+ * make sure to use modulo to make it circular!
+ *
+ * Because of their general processing characteristics,
+ * queues are often called a FIFO or LILO structure
+ * (first-in-first-out or last-in-last-out).
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

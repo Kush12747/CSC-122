@@ -1,0 +1,386 @@
+String Streams
+
+//is to translate from numeric types to string version or back.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#include <sstream>//file to include in program
+
+#include <sstream>
+#include <string>
+#include <iostream>
+#include <limits>
+
+using namespace std;
+
+void /*streamsize*/ str_to_num(const string & str, double & num)
+{
+    istringstream iss(str);
+    iss.imbue(cin.getloc());
+    //iss.flags(cin.flags());
+    //iss.precision(cin.precision());
+    iss >> num;
+    return /*iss.gcount()*/;
+}
+void str_to_num(const string & str, long & num)
+{
+    istringstream iss(str);
+    iss.imbue(cin.getloc());
+    //iss.flags(cin.flags());
+    iss >> num;
+    return;
+}
+void str_to_num(const string & str, unsigned long & num)
+{
+    istringstream iss(str);
+    iss.imbue(cin.getloc());
+    //iss.flags(cin.flags());
+    iss >> num;
+    return;
+}
+void str_to_num(const string & str, short & num)
+{
+    istringstream iss(str);
+    iss.imbue(cin.getloc());
+    //iss.flags(cin.flags());
+    iss >> num;
+    return;
+}
+void str_to_num(const string & str, unsigned short & num)
+{
+    istringstream iss(str);
+    iss.imbue(cin.getloc());
+    //iss.flags(cin.flags());
+    iss >> num;
+    return;
+}
+
+class Extractor
+{
+    istringstream iss;
+public:
+    Extractor(const string & str) : iss(str)
+    {
+        iss.imbue(cin.getloc());
+        //iss.flags(cin.flags());
+        //iss.precision(cin.precision());
+    }
+    void get_num(double & num)
+    {
+        iss >> num;
+        return;
+    }
+    void get_num(long & num)
+    {
+        iss >> num;
+        return;
+    }
+    void get_num(unsigned long & num)
+    {
+        iss >> num;
+        return;
+    }
+    void get_num(short & num)
+    {
+        iss >> num;
+        return;
+    }
+    void get_num(unsigned short & num)
+    {
+        iss >> num;
+        return;
+    }
+    // this would allow a class object to be changed from
+    // the original string to a new string -- rather than
+    // creating a new Extractor object
+    void reset(const string & str)
+    {
+        iss.clear();
+        iss.str(str);
+        return;
+    }
+};
+
+int main(void)
+{
+    string str = "-4.2 -6 5 -8 3";
+    double d;
+    long L;
+    unsigned long uL;
+    short h;
+    unsigned short uh;
+    /*streamsize pos;
+
+    pos =*/ str_to_num(str, d);
+    //cerr << "used up " << pos << " characters of string.\n";
+    str_to_num(str/*.substr(pos+1)*/, L);
+    str_to_num(str, uL);
+    str_to_num(str, h);
+    str_to_num(str, uh);
+
+    cout << "My numbers are:  " << d << ',' << L << ',' << uL << ',' << h
+         << ',' << uh << ".\n";
+
+    cout << "\nPress <Return> to continue...\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    Extractor xtr(str);
+
+    xtr.get_num(d);
+    xtr.get_num(L);
+    xtr.get_num(uL);
+    xtr.get_num(h);
+    xtr.get_num(uh);
+
+    cout << "\nMy numbers are:  " << d << ',' << L << ',' << uL << ',' << h
+         << ',' << uh << ".\n";
+    return 0;
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <limits>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+
+using namespace std;
+
+class DieRoll
+{
+    short count, sides, adjust;
+    bool only_pos(short & to, short from)
+       { bool okay = from > 0; if (okay) { to = from; } return okay; }
+
+public:
+    DieRoll(short c = 1, short s = 6, short a = 0)
+        : count(c), sides(s), adjust(a) { /* shouldn't I call only_pos? */ }
+    long roll(void) const;
+    short get_count(void) const { return count; }
+    short get_sides(void) const { return sides; }
+    short get_adjust(void) const { return adjust; }
+    bool set_sides(short s) { return only_pos(sides, s); }
+    bool set_count(short c) { return only_pos(count, c); }
+    bool set_adjust(short a) { adjust = a; return true; }
+};
+
+long DieRoll::roll(void) const
+{
+    long tot = 0L;
+    for (short d = 1; d <= count; d++)
+    {
+        tot += 1L + rand() % sides;
+    }
+    return tot + adjust;
+}
+
+ostream & operator<<(ostream & out, const DieRoll & dr)
+{
+    ostringstream oss;
+    oss.imbue(out.getloc());
+    // could also copy flags, precision, fill, etc. from out to oss
+    //     oss.flags(out.flags());
+    //     oss.precision(out.precision());
+    //     ...
+    // (but we have integers here and are using the ostream to do our
+    // width settings)
+    if (dr.get_count() != 1)
+    {
+        oss << dr.get_count();
+    }
+    oss << 'd' << dr.get_sides();
+    if (dr.get_adjust() != 0)
+    {
+        oss.setf(ios_base::showpos);
+        oss << dr.get_adjust();
+    }
+    return out << oss.str();
+}
+
+string & operator>>(string & in, DieRoll & dr)
+{
+    short t;
+    char d;
+    istringstream iss(in);
+    iss >> t;
+    if (iss.fail())
+    {
+        dr.set_count(1);
+        iss.clear();
+    }
+    else
+    {
+        dr.set_count(t);
+    }
+    iss >> d >> t;
+    dr.set_sides(t);
+    if (iss.peek() == '+' || iss.peek() == '-')
+    {
+        iss >> d >> t;
+        if (d == '-')
+        {
+            t = -t;
+        }
+        dr.set_adjust(t);
+    }
+    else
+    {
+        dr.set_adjust(0);
+    }
+    return in;
+}
+
+// this is silly...  we already ~have~ a stream after all...
+// the above is more useful...
+istream & operator>>(istream & in, DieRoll & dr)
+{
+    short t;
+    string line;
+    char pm;
+    istringstream iss;
+    iss.imbue(in.getloc());   // imbue with locale information from stream
+    getline(in, line, 'd');
+    if (!in.fail())         // getline would fail if no 'd' were ever found
+    {
+        if (line.empty())
+        {
+            dr.set_count(1);
+        }
+        else
+        {
+            iss.str(line);
+            iss >> t;
+            dr.set_count(t);
+        }
+        in >> line;
+        iss.clear();  // if we went through the else, eof got set and needs
+                      // to be cleared before we can reset the buffer string
+        iss.str(line);
+        iss >> t;
+        dr.set_sides(t);
+        iss >> pm;
+        if (!iss.good())  // fail or eof?
+        {
+            dr.set_adjust(0);
+        }
+        else
+        {
+            iss >> t;
+            if (pm == '-')
+            {
+                t = -t;
+            }
+            dr.set_adjust(t);
+        }
+    }
+    return in;
+}
+
+// in DnD, damage done is always at least one -- you cannot hit someone and
+// give them back hit points or do no damage at all!
+long roll_damage(const DieRoll & dice)
+{
+    long t = dice.roll();
+    return t <= 0L ? 1L : t;
+}
+
+int main(void)
+{
+    DieRoll hammer;
+    DieRoll bow;
+    string t;
+
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    cout << "Enter damage from hammer:  ";
+    cin >> hammer;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "Enter damage from bow:  ";
+    getline(cin, t);
+    t >> bow;
+
+    cout << "If you use the hammer (" << setw(7) << hammer << "), you'll do "
+         << setw(4) << roll_damage(hammer) << " HP of damage.\n";
+    cout << "If you use the bow    (" << setw(7) << bow << "), you'll do "
+         << setw(4) << roll_damage(bow) << " HP of damage.\n";
+
+    return 0;
+}
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//eof test for loops
+
+// istringstream::eof
+#include <iostream>
+#include <sstream>
+#include <string>
+using namespace std;
+
+int main ()
+{
+
+    short val;
+
+    istringstream iss;
+    string strvalues = "32 240 2 1450";
+
+    cout << "Standard priming read test:\n";
+    iss.str (strvalues);
+
+    iss >> val;
+    while (!iss.eof())
+    {
+        cout << val << '\n';
+        iss >> val;
+    }
+    // *eek!*  eof triggers early on an istringstream!
+
+    iss.clear();
+
+    cout << "\nHacked while read test:\n";
+    iss.str (strvalues);
+
+    iss >> ws;
+    while (!iss.eof())
+    {
+        iss >> val;
+        cout << val << '\n';
+        iss >> ws;
+    }
+
+    // eof triggers without ws on an istringstream...
+    // (unless you are appending the '\n' or other spacing to the buffer
+    // by hand...)
+    cout << "\n\t\tA bad idea that happens to work...\n\n";
+    iss.clear();
+    iss.str (strvalues);
+    do
+    {
+        iss >> val;
+        cout << val << '\n';
+    } while (!iss.eof());
+    return 0;
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

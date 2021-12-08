@@ -1,0 +1,75 @@
+Stacks
+
+Stack operations are push and pop.  push places a new
+ * item at the top of the stack.  pop removes the item from
+ * the top of the stack.  Access to the middle or end of the
+ * stack is *NOT* allowed!
+
+//stacks are often called FILO or LIFO structures 
+//(first-in-last-out or last-in-first-out).
+//could use full, empty, and/or clear -- maybe even size!
+--------------------------------------------------------------------------
+template <typename DataT>
+class Stack : private LinkedList<DataT>
+{
+public:
+    // need ctors, dtor, op=
+    // push, pop, any other helpers
+    void push(const DataT & d)
+    {
+        insert_at_head(d);  // call LinkedList::insert_at_head()
+        return;
+    }
+    void pop(DataT & d)
+    {
+        d = retrieve_head();
+        remove_from_head();
+        return;
+    }
+    // (have these call thru to our ancestor's methods...)
+    // (our private inheritance mode precludes the programmer from calling
+    // them directly and getting around our 'top access only' policy!)
+};
+--------------------------------------------------------------------------
+Why a stack?
+
+ *    -- function call stack
+ *    -- can use a stack and a loop to emulate recursion without the fear of
+ *       [call] stack overflow  (your data stack will be on the heap and
+ *       should grow pretty near infinitely)
+ *    -- palindrome checking can be done with a stack:  push half the string
+ *       onto the stack and compare as you pop those elements off but continue
+ *       forward through the string
+ *    -- evaluation of mathematical expressions can be effected with one or
+ *       two stacks (either just operand stack or operand and operator stacks
+ *       depending on the expression entry method)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

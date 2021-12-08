@@ -1,0 +1,95 @@
+Assertions
+
+//CPP -DNDEBUG assert.concepts
+
+When debugging, it is convenient to check for common
+ * idiotic argument values via a simple mechanism rather
+ * than a large if/else structure.  Such a mechanism is
+ * given in the assert/NDEBUG macros.  (Macros are like
+ * either a function or a constant depending on how they are
+ * used.  assert here is a function-style macro and NDEBUG
+ * is a constant-style one.)
+
+For instance, if your function needed two of its
+ * parameters to both be positive and their sum to be at
+ * least 5, you could code up the following asserts:
+ *
+ *     assert(x>0);
+ *     assert(y>0);
+ *     assert(x+y>=5);
+ *
+ * If any of these fail to be true, the text of the test is
+ * printed along with a message indicating its failure --
+ * and the program is halted at this point.
+----------------------------------------------------------------------------
+#include <iostream>
+#include <cassert>
+
+using namespace std;
+
+inline long total(short x, short y)
+{
+    assert(x>0);   // note that the assert message comes up
+                   // for this line here and not the call
+                   // line...this makes it less fun to
+                   // debug; but at least it does narrow
+                   // down the problem to calls to this
+                   // function...
+    assert(y>0);
+    assert(x+y>=5);
+    return (x+y)*4;
+}
+
+int main(void)
+{
+    cout << "Total of 2 & 3:  " << total(2,3) << ".\n";
+    cout << "Total of 30 & 40:  " << total(30, 40) << ".\n";
+
+    // a vigorous search with cerr later and you've narrowed
+    // down all calls to total( that could have caused the
+    // problem to be this one:
+    cout << "Total of -3 & 8:  " << total(-3,8) << ".\n";
+    return 0;
+}
+
+NDEBUG constant defined and all asserts
+ * will simply disappear!  (NDEBUG is short for "we're Not
+ * DEBUGging anymore".)
+
+
+CPP -DNDEBUG assert.concepts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

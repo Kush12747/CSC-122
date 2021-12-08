@@ -1,0 +1,108 @@
+Traversals Trees
+
+//4 types of traversals trees
+   -- pre-order traversal
+   -- in-order traversal
+   -- post-order traversal   (aka depth-first traversal)
+   -- breadth-first traversal
+
+//in-order puts it in order
+//breadth-first goes from left to right from top to bottom (---->
+							   <-----)
+----------------------------------------------------------------------------
+Here is example code for an in-order traversal to print a tree of strings:
+
+template <typename DataT>
+void print_in_order(TreeNode<DataT> * root)
+{
+    if (root != nullptr)
+    {
+        print_in_order(root->Left());
+        root->Data().print();
+        print_in_order(root->Right());
+    }
+    return;
+}
+template <typename DataT>
+void print_pre_order(TreeNode<DataT> * root)
+{
+    if (root != nullptr)
+    {
+        root->Data().print();
+        print_pre_order(root->Left());
+        print_pre_order(root->Right());
+    }
+    return;
+}
+template <typename DataT>
+void print_post_order(TreeNode<DataT> * root)
+{
+    if (root != nullptr)
+    {
+        print_post_order(root->Left());
+        print_post_order(root->Right());
+        root->Data().print();
+    }
+    return;
+}
+template <typename DataT>
+void print_breadth_order(TreeNode<DataT> * root)
+{
+    if (root != nullptr)
+    {
+        queue<TreeNode<DataT>*> nodes;
+        nodes.enque(root);
+        while (!nodes.empty())
+        {
+            root = nodes.deque();
+            if (root->Left() != nullptr)
+            {
+                nodes.enque(root->Left());
+            }
+            if (root->Right() != nullptr)
+            {
+                nodes.enque(root->Right());
+            }
+            root->Data().print();
+        }
+    }
+    return;
+}
+---------------------------------------------------------------------------
+Binary search tree
+
+BST invariant:
+ *    left  child's data is less    than node's data &
+ *    right child's data is greater than node's data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

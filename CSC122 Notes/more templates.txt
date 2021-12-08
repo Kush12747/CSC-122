@@ -1,0 +1,65 @@
+Friends!!
+
+template'd classes have trouble making friends, too. There is a three step process involved with this:
+
+declare the template'd class
+
+declare the function/class that is to be the template'd class' friend
+
+declare the friendship inside the template'd class' definition as normal exceptthat you must place empty angle brackets — <> — between the friend's name and its argument list
+
+template <typename TypeT>
+    class ClassName;
+
+    template <typename TypeT>
+    ostream & operator<<(ostream & os, const ClassName<TypeT> & cob);
+
+    template <typename TypeT>
+    class ClassName
+    {
+        friend ostream & operator << <> ( ostream & os,
+                                          const ClassName & cob);
+    };
+
+
+
+
+When using inheritance, a template'd class may be
+ * inherited from and may also inherit from another class.
+ * The class deriving from the template'd class may be a
+ * template itself, a non-template, or even a differently
+ * template'd class.  The template'd class' parent may
+ * likewise be a regular non-template class, a
+ * like-template'd class, or a differently template'd class.
+ * (Basically template'd classes can mix freely with the
+ * inheritance mechanism.  To 'fix' or change templates
+ * during inheritance, simply instantiate and/or nest inside
+ * a new template.)
+ *
+ * For a couple of 'concrete' examples, see the Employee
+ * class hierarchy online..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

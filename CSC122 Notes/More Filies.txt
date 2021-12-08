@@ -1,0 +1,4 @@
+Passing Files with Functions
+
+#always pass by reference for passing files to functions
+#pass by istream & ostream

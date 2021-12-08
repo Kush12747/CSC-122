@@ -1,0 +1,66 @@
+Multiple Inheritance
+
+When a class chooses multiple parents, it is using multiple inheritance.
+ * (*shock*  *gasp*)
+ *
+ * Name clashes between the two parents' offerings (both having a print() or a
+ * get_a() for instance) can be handled fairly simply with scope resolution at
+ * the call.
+ *
+ * But, the duplication of data from a common grand-parent is more difficult
+ * to remove!  Known as the 'diamond of death', this is not just a matter of
+ * scoping but a redundancy in data storage -- one of the things inheritance
+ * was trying to remove in the first place!  To solve this trouble, we'll have
+ * to get the compiler's help.  It is, of course, syntax happy, so we'll have
+ * to bastardize at least one keyword.  Then we'll have to just trust to the
+ * weirdness.
+ *
+ * Another way to avoid the diamond of death/doom is to just not use multiple
+ * inheritance at all.  Instead, choose one parent and make yourself a data
+ * member of the other proposed parent's type.  The problem with this solution
+ * is that you must take responsibility upon yourself to keep the common
+ * grandparent data syncronized.  *shiver*
+=================================================================================
+Protected Members
+
+Members of a class whose access is marked 'protected' are
+ * private from outside the inheritance hierarchy but public
+ * from inside the hierarchy.
+ *
+ * Do *NOT* make data members protected!  Leave them
+ * private.  You can have protected functions that provide
+ * easier or special access to your children, but not to
+ * those outside the family.
+
+============================================================================
+Inheritance Modes
+
+Most inheritance is done in a public manner:
+ *
+ *     class Child : public Parent
+ *
+ * But it is also possible to use other inheritance modes
+ * besides public.  The two others are private and
+ * protected.
+ *
+ * A private mode of inheritance makes all public or
+ * protected members of your parent private when viewed from
+ * your objects.
+ *
+ * A protected mode of inheritance makes all public members
+ * of your parent protected when viewed from your objects.
+ *
+ * In other words, the access to your parent's members is
+ * made more restrictive by the other two inheritance modes
+ * -- when viewed from objects of your class.
+ *
+ * (Show the table...)
+ *
+ * This has limited applicability, of course.  It is rarely
+ * used.  But we will see a good occasion to use it when
+ * discussing stacks and queues later on...
+
+
+
+
+
