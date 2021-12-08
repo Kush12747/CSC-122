@@ -1,0 +1,29 @@
+1. Does it matter if your operators are class members? 
+   Should they be const? Do they need to be friends?
+
+   - No, it does not matter if the operators are not in
+     a class. They would still work the same ways as do
+     as if they were in a class. The only const should be
+     the output function.
+
+2. How can you match the word the user types against the suit names?
+   How can you match only the number of characters entered? 
+   (Note the matches are case insensitive...)
+
+   - In my program, I made a function where it takes the user
+     input. In the function I made for loop to lowercase the string
+     because the versatility of user input option. Then I used a 
+     if else if to compare the length of the string to it's substr
+     to find a match from whatever the user inputted. Finnaly, then
+     set it to the newOther variable.
+
+3. Might your program benefit from use of the string or Stringclasses?
+
+   - Both would work for this program because you can look at the string
+     or by c-strings. Depends on how you interpret the situation.
+
+4. What other operators might prove useful for your enumerated type 
+   in a full card game program?
+
+   - Some other operators that might be useful is operator==, operator+,
+     oprator-, operator!=, operator>>, and operator<<.

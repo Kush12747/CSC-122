@@ -1,0 +1,45 @@
+1. Which operators are members and which are non-members? 
+   Do any have to be members?
+
+    - operator==, operator !=, operator/, operator- are all members in the 
+      class point. The non-members are operator<< and operator>>. Whenever 
+      we use a object we need to use members since it's neccesary.
+
+2. Which operators should be const? What other methods might well be
+   made const? In general, what is the rule which determines if a method
+   should be made const?
+
+    - All of the overloaded operator should be const becasue we can't have data
+      being changed since it would produce the wrong results.
+
+3. What type do equality and and inequality return? Input? Output? Assignment?
+
+    - The inequality and equality return a bool, Input returns a istream 
+      and Output returns ostream, and Assignment returns the refernce of the
+      points.
+
+4. Do you agree with your friend's decision to use operator/ for midpoint? 
+   Why/Why not?
+
+    - No, this is not the best design to choose becasue we never clssify
+      where the point shifted, moved, or what axis. The operator/ is to
+      calculate the midpoint by dividing the points.
+
+5. Why didn't you overload operators for less than, greater than, etc.?
+
+    - You can't overload these operators because in some scenarios
+      we could x greater than x or y less than y. Simply they can't
+      be > or <.
+      
+6. Your friend wanted to overload operators for the flip and shift methods, 
+   too (~ and += respectively). Why did you talk them out of it? Why wasn't 
+   this a good idea?
+
+    - This would defintily be bad idea becasue the '+=' is meant to be
+      an assignment operator and the ~ is bitwise inverse operator
+
+7. Just because you've added operators, should you necessarily remove 
+   the old methods that did these jobs?
+
+    - No, because all you would have to do is update the methods with
+      the version of the Point class.

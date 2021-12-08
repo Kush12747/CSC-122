@@ -1,0 +1,27 @@
+1) What things might cause your new sort template to fail to instantiate?
+    
+    - One error could occur is that the parameters are not correct or
+    not match up.
+
+2) Where should the overloaded swap form go? (In the library or the main 
+   application?) If in the library, should it be in the header with the 
+   swap template or in the implementation file? Does it matter to the 
+   compiler where it is? Why/Why not?
+
+    - I used a templated swap so it needs to be placed in the header 
+    file so it can compile properly. It wouldn't work in the 
+    implementation file since it would cause some errors.
+
+3) Did you need to make any changes to your original swap template?
+    
+    - Yes, the changes I made was a template function and included a
+    T in front of the temp variable.
+
+4) Which comparisons did you write as plain functions? Function objects? 
+   Were any of them templated? Could/Should they have been?
+
+    - In my program I used a templated bubble sort becasue it works with
+    all types of arrays tested such as char, int, double, and string
+    arrays. The sort function can work with the arrays without the template, 
+    so it shows how versatile it can be. By maiking them plain functions they
+    wouldn't work and could give the wrong output.
