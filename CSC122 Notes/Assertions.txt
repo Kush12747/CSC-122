@@ -58,38 +58,3 @@ NDEBUG constant defined and all asserts
 
 
 CPP -DNDEBUG assert.concepts
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
